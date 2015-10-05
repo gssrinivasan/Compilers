@@ -22,8 +22,12 @@ int yylex();
 void yyerror(char * s);
 %}
 
-%start main
- 
+//%start main
+
+%token START_main START_program;
+
+%start pickone;
+
 %union {
   float num;
   char *id;
@@ -37,11 +41,13 @@ void yyerror(char * s);
 //%token	<id> ID
 %token 	NOTOKEN LPARENT RPARENT LBRACE RBRACE LCURLY RCURLY COMA SEMICOLON EQUAL STRING_CONST INT FLOAT LONG LONGSTAR VOID CHAR CHARSTARSTAR INTEGER_CONST AMPERSAND OROR ANDAND EQUALEQUAL NOTEQUAL LESS GREAT LESSEQUAL GREATEQUAL PLUS MINUS TIMES DIVIDE PERCENT IF ELSE WHILE DO FOR CONTINUE BREAK RETURN 
 
-%type <st> main
-%type <st> function
-%type <st> global_var
-%type <st> call_arg_list
-%type <st> call_arguments
+
+%type <st> function//c
+%type <st> global_var//c
+%type <st> call_arg_list//c
+%type <st> call_arguments//c
+%type <exp_node_ptr> main
+%type <exp_node_ptr> program
 %type <exp_node_ptr> arguments
 %type <exp_node_ptr> arg_list
 %type <exp_node_ptr> function_or_var_list
@@ -65,7 +71,21 @@ void yyerror(char * s);
 %type <exp_node_ptr> jump_statement
 
 %%
-main : function_or_var_list {}
+
+
+pickone:
+  START_main main
+| START_program program;
+
+
+main : call
+       | assignment 
+       | statement
+       | expression
+       | primary_expr
+       | compound_statement
+
+program : function_or_var_list {}
         ;
 
 function_or_var_list:
