@@ -6,17 +6,12 @@
 #include <map>
 #include <list>
 #include "myc.h"
-
 using namespace std;
-
  extern FILE *yyin;
-
 // the root of the abstract syntax tree
  statement *root;
-
 // for keeping track of line numbers in the program we are parsing
   int line_num = 1;
-
 // function prototypes, we need the yylex return prototype so C++ won't complain
 int yylex();
 void yyerror(char * s);
@@ -72,6 +67,7 @@ function_or_var_list:
         function_or_var_list function
         | function_or_var_list global_var
         | expression
+        | compound_statement
 	;
 
 function:
@@ -262,16 +258,8 @@ statement:
 	 }
 	 | local_var
 	 | compound_statement
-	 | IF LPARENT expression RPARENT {
-
-	 
-	 } statement {
-	 	
-
-	 } 
-               else_optional {
-	 	
-	 }
+	 | IF LPARENT expression RPARENT LCURLY statement RCURLY{}
+   | IF LPARENT expression RPARENT LCURLY statement RCURLY ELSE LCURLY statement RCURLY{ }
 	 | WHILE LPARENT expression RPARENT {
 		
          }
@@ -290,10 +278,6 @@ statement:
 	 | jump_statement
 	 ;
 
-else_optional:
-         ELSE  statement
-	 | /* empty */
-         ;
 
 jump_statement:
        CONTINUE SEMICOLON {
@@ -333,5 +317,3 @@ void yyerror(const char * s)
 {
 	fprintf(stderr,"%s:%d: %s\n",line_num, s);
 }
-
-
