@@ -38,19 +38,18 @@ void yyerror(char * s);
 %token 	NOTOKEN LPARENT RPARENT LBRACE RBRACE LCURLY RCURLY COMA SEMICOLON EQUAL STRING_CONST INT FLOAT LONG LONGSTAR VOID CHAR CHARSTARSTAR INTEGER_CONST AMPERSAND OROR ANDAND EQUALEQUAL NOTEQUAL LESS GREAT LESSEQUAL GREATEQUAL PLUS MINUS TIMES DIVIDE PERCENT IF ELSE WHILE DO FOR CONTINUE BREAK RETURN 
 
 %type <st> main
-%type <st> function_or_var_list
 %type <st> function
-%type <st> arguments
-%type <st> arg_list
 %type <st> global_var
 %type <st> call_arg_list
 %type <st> call_arguments
-%type <st> assignment
-%type <st> compound_statement
-%type <st> statement_list
-%type <st> statement
-%type <st> local_var
-%type <exp_node_ptr> var_type
+%type <exp_node_ptr> arguments
+%type <exp_node_ptr> arg_list
+%type <exp_node_ptr> function_or_var_list
+%type <exp_node_ptr> statement
+%type <exp_node_ptr> assignment
+%type <exp_node_ptr> local_var
+%type <exp_node_ptr> compound_statement
+%type <exp_node_ptr> statement_list
 %type <exp_node_ptr> arg
 %type <exp_node_ptr> global_var_list
 %type <exp_node_ptr> call
