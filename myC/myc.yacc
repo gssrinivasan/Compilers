@@ -1,12 +1,11 @@
 %{
-
 #include <iostream>
 #include <string>
 #include <stdlib.h>
 #include <stdio.h>
 #include <map>
 #include <list>
-#include "simple.h"
+#include "myc.h"
 
 using namespace std;
 
@@ -31,26 +30,53 @@ void yyerror(char * s);
   exp_node *exp_node_ptr;
   statement *st;
 }
+%error-verbose
 
-%token	<id> WORD
+%token <num> NUMBER
+%token <id> ID
+//%token	<id> ID
+%token 	NOTOKEN LPARENT RPARENT LBRACE RBRACE LCURLY RCURLY COMA SEMICOLON EQUAL STRING_CONST INT FLOAT LONG LONGSTAR VOID CHAR CHARSTARSTAR INTEGER_CONST AMPERSAND OROR ANDAND EQUALEQUAL NOTEQUAL LESS GREAT LESSEQUAL GREATEQUAL PLUS MINUS TIMES DIVIDE PERCENT IF ELSE WHILE DO FOR CONTINUE BREAK RETURN 
 
-%token 	NOTOKEN LPARENT RPARENT LBRACE RBRACE LCURLY RCURLY COMA SEMICOLON EQUAL STRING_CONST INT FLOAT LONG LONGSTAR VOID CHARSTAR CHARSTARSTAR INTEGER_CONST AMPERSAND OROR ANDAND EQUALEQUAL NOTEQUAL LESS GREAT LESSEQUAL GREATEQUAL PLUS MINUS TIMES DIVIDE PERCENT IF ELSE WHILE DO FOR CONTINUE BREAK RETURN 
 %type <st> main
-
-
+%type <st> function_or_var_list
+%type <st> function
+%type <st> arguments
+%type <st> arg_list
+%type <st> global_var
+%type <st> call_arg_list
+%type <st> call_arguments
+%type <st> assignment
+%type <st> compound_statement
+%type <st> statement_list
+%type <st> statement
+%type <st> local_var
+%type <exp_node_ptr> var_type
+%type <exp_node_ptr> arg
+%type <exp_node_ptr> global_var_list
+%type <exp_node_ptr> call
+%type <exp_node_ptr> expression
+%type <exp_node_ptr> logical_or_expr
+%type <exp_node_ptr> logical_and_expr
+%type <exp_node_ptr> equality_expr
+%type <exp_node_ptr> relational_expr
+%type <exp_node_ptr> additive_expr
+%type <exp_node_ptr> multiplicative_expr
+%type <exp_node_ptr> primary_expr
+%type <exp_node_ptr> local_var_list
+%type <exp_node_ptr> jump_statement
 
 %%
-main : function_or_var_list {root = $$;}
+main : function_or_var_list {}
         ;
 
 function_or_var_list:
         function_or_var_list function
         | function_or_var_list global_var
-        | /*empty */
+        | expression
 	;
 
 function:
-         var_type WORD
+         var_type ID
          {
 
 	 	 }
@@ -73,8 +99,7 @@ arguments:
 	 | /*empty*/
 	 ;
 
-arg: var_type WORD { 
-
+arg: var_type ID SEMICOLON {
    };
 
 global_var: 
@@ -82,31 +107,29 @@ global_var:
 
 		};
 
-global_var_list: WORD {
+global_var_list: ID {
 
         }
-| global_var_list COMA WORD {
+| global_var_list COMA ID {
 
 }
         ;
 
-var_type: CHARSTAR {
+var_type: CHAR | INT | FLOAT | CHARSTARSTAR | LONG | LONGSTAR | VOID
+		;
 		
-		}
-		| INT | FLOAT | CHARSTARSTAR | LONG | LONGSTAR | VOID;
-
 assignment:
-     WORD EQUAL expression {
+     ID EQUAL expression {
 	 	
 		}
-	 | WORD LBRACE expression RBRACE EQUAL expression {
+	 | ID LBRACE expression RBRACE EQUAL expression {
 
 	 	
 	 }
 	 ;
 
 call :
-	 WORD LPARENT  call_arguments RPARENT {
+	 ID LPARENT  call_arguments RPARENT {
 		
 	 }
       ;
@@ -194,14 +217,11 @@ multiplicative_expr:
 	  ;
 
 primary_expr:
-	STRING_CONST {
-		
-	}
-    | call
-	| WORD {
+	  call
+	| ID {
 		 
 	  }
-	  | WORD LBRACE expression RBRACE {
+	  | ID LBRACE expression RBRACE {
 
 	  	
 		
@@ -228,11 +248,10 @@ local_var:
 		}
 		;
 
-local_var_list: 
-		WORD {
+local_var_list: ID {
 		
 			}
-        | local_var_list COMA WORD {
+        | local_var_list COMA ID {
 			
 			}
         ;
@@ -308,7 +327,7 @@ int main(int argc, char **argv)
   cout << "---------- exeuction of input program------------" << endl << endl;
   
 
-  //root->evaluate();
+  root->evaluate();
 }
 
 void yyerror(const char * s)
