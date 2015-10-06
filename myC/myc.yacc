@@ -126,43 +126,75 @@ MINUS TIMES DIVIDE PERCENT IF ELSE WHILE DO FOR CONTINUE BREAK RETURN LSQUBRACKT
 %%
 
 status: main
+{
+$$ = $1;
+}
         | program
+        {
+        $$ = $1;
+        }
         ;
        
 main: compound_statement
+{
+        $$ = $1;
+        }
       | expression
+      {
+        $$ = $1;
+        }
       | call
+      {
+        $$ = $1;
+        }
        ;
         
-program: function_or_var_list {}
+program: function_or_var_list 
+{  
+        $$ = $1;
+}
         ;
 
 function_or_var_list:
 
         function_or_var_list function
+        {
+        $$ = new func_node($1,$2);
+        }
 
         | function_or_var_list global_var
-
+        
+        {
+        $$ = new func_node1($1,$2);
+        }
+        
         | expression
+        {
+        $$ = $1;
+        }
 
-        | compound_statement 
+        | compound_statement
+        {
+        $$ = $1
+        } 
 
 ;
 
 function:
-         var_type ID
+         var_type ID  
          {
-           $$ = new id_node($1); //$$ = new id_node($1);
+           $$ = new id_node($1,$2); //$$ = new id_node($1,$2);
 	 	 }
-        LPARENT arguments RPARENT {
+         LPARENT arguments RPARENT
+         {
         
-        $$ = new function_args($2); // $$ = new function_args($2);
+        $$ = $2; // $$ = $2;
          
 		 }
         compound_statement
          {
           
-          $$ = new comp_Stat($1); // $$ = new comp_Stat($1);
+          $$ = $1; // $$ = $1;
           
           }
 	;
@@ -170,7 +202,7 @@ function:
 arg_list:
          arg
          {
-         $$ = new args_list($1); //$$ = new args_list($1)
+         $$ = $1; //$$ = new args_list($1)
          }
          | arg_list COMA arg
          {
@@ -181,7 +213,7 @@ arg_list:
 arguments:
          arg_list
          {
-         $$ = new arguments_node($1); //$$ = new arguments_node($1);
+         $$ = $1; //$$ = new arguments_node($1);
          }
 	 | /*empty*/
    {
@@ -212,16 +244,33 @@ global_var_list: ID {
 }
         ;
 
-var_type: array | CHAR | INT | FLOAT | CHARSTARSTAR | LONG | LONGSTAR | VOID 
+var_type: array 
+
+      {
+      $$ = $1;
+        }
+
+       | CHAR | INT | FLOAT | CHARSTARSTAR | LONG | LONGSTAR | VOID 
   {
   $$ = new vartype_node($1); //$$ = new vartype_node($1);
   };	
-; 
+
 
 array: var_type ID arraylist SEMICOLON
+{
+
+        $$ = new array_node($1,$2,$3);
+}
 
 arraylist: LSQUBRACKT NUMBER RSQUBRACKT arraylist
+{
+  $$ =  $4;
+}
            | 
+           
+           {
+           $$ = new skip_stmt();
+           }
            ;
  
 
@@ -249,7 +298,7 @@ call :
 call_arg_list:
          expression {
          
-         $$ = new callarg_node($1); //$$ = new callarg_node($1);
+         $$ = $1; //$$ = new callarg_node($1);
 		
 	 }
          | call_arg_list COMA expression {
@@ -263,7 +312,7 @@ call_arg_list:
 call_arguments:
          call_arg_list 
          {
-           $$ = new callarg_node2(S1); // $$ = new callarg_node2(S1);
+           $$ = $1; // $$ = new callarg_node2(S1);
          }
 	 | /*empty*/ 
    {
@@ -274,14 +323,14 @@ call_arguments:
 expression :
          logical_or_expr
          {
-         $$ = new exp_or($1); //$$ = new exp_or($1);
+         $$ = $1; //$$ = new exp_or($1);
          }
 	 ;
 
 logical_or_expr:
          logical_and_expr
          {
-         $$ = new exp_and($1); //$$ = new exp_and($1);
+         $$ = $1; //$$ = new exp_and($1);
          }
 	 | logical_or_expr OROR logical_and_expr {
    
@@ -293,7 +342,7 @@ logical_or_expr:
 logical_and_expr:
          equality_expr
          {
-         $$ = new equality_node($1); //$$ = new equality_node($1);
+         $$ = $1; //$$ = new equality_node($1);
          }
 	 | logical_and_expr ANDAND equality_expr {
    
@@ -305,7 +354,7 @@ logical_and_expr:
 equality_expr:
          relational_expr
          {
-         $$ = new equality_node1($1); //$$ = new equality_node1($1)
+         $$ = $1; //$$ = new equality_node1($1)
          }
 	 | equality_expr EQUALEQUAL relational_expr {
    
@@ -322,7 +371,7 @@ equality_expr:
 relational_expr:
          additive_expr
          {
-         $$ = new rel_node($1);//$$ = new rel_node($1);
+         $$ = $1;//$$ = new rel_node($1);
          }
 	 | relational_expr LESS additive_expr {
 	 
@@ -348,7 +397,7 @@ relational_expr:
 additive_expr:
           multiplicative_expr
           {
-          $$ = new add_node($1); //$$ = new add_node($1);
+          $$ = $1; //$$ = new add_node($1);
           }
 	  | additive_expr PLUS multiplicative_expr {
      
@@ -364,7 +413,7 @@ additive_expr:
 multiplicative_expr:
           primary_expr
           {
-          $$ = new mul_node($1); //$$ = new mul_node($1);
+          $$ = $1; //$$ = new mul_node($1);
           }
 	  | multiplicative_expr TIMES primary_expr {
 		$$ = new mul_node1($1,$3); //$$ = new mul_node1($1,$3);
@@ -384,7 +433,7 @@ multiplicative_expr:
 primary_expr:
 	  call
      {
-     $$ = new priexp_node($1); //$$ = new priexp_node($1);
+     $$ = $1; //$$ = new priexp_node($1);
      }
 	| ID {
 		 $$ = new priexp_node1($1); //$$ = new priexp_node1($1);
@@ -401,21 +450,21 @@ primary_expr:
 	  }
 	  | LPARENT expression RPARENT
      {
-     $$ = new priexp_node4($2);//$$ = new priexp_node4($2);
+     $$ = $2;//$$ = new priexp_node4($2);
      }
 	  ;
 
 compound_statement:
 	 LCURLY statement_list RCURLY
    {
-   $$ = new cmpd_node($2);//$$ = new cmpd_node($2);
+   $$ = $2;//$$ = new cmpd_node($2);
    }
 	 ;
 
 statement_list:
          statement_list statement
          {
-         $$ = new stat_node($1); //$$ = new stat_node($1);
+         $$ = new stat_node($1,$2); //$$ = new stat_node($1);
          }
 	 | /*empty*/
    {
@@ -443,18 +492,18 @@ local_var_list: ID {
 statement:
          assignment SEMICOLON
          {
-         $$ = new stat_node1($1); //$$ = new stat_node1($1);
+         $$ = $1; //$$ = new stat_node1($1);
                   }
 	 | call SEMICOLON {
-	 	$$ = new stat_node2($1);//$$ = new stat_node2($1);
+	 	$$ = $1;//$$ = new stat_node2($1);
 	 }
 	 | local_var
    {
-   $$ = new stat_node3($1);//$$ = new stat_node3($1);
+   $$ = $1;//$$ = new stat_node3($1);
    }
 	 | compound_statement
    {
-   $$ = new stat_node4($1);//$$ = new stat_node4($1);
+   $$ = $1;//$$ = new stat_node4($1);
    }
 	 | IF LPARENT expression RPARENT LCURLY statement RCURLY{
    $$ = new stat_node5($3,$6);//$$ = new stat_node5($3,$6);
@@ -463,33 +512,40 @@ statement:
    $$ = new stat_node6($3,$6,$10);//$$ = new stat_node6($3,$6,$10);
    }
 	 | WHILE LPARENT expression RPARENT {
-		$$ = new loop_node1($3);//$$ = new loop_node1($3);
+		$$ = $3;//$$ = new loop_node1($3);
          }
          statement {
-		$$ = new loop_node2($1);//$$ = new loop_node2($1);
+		$$ = $1;//$$ = new loop_node2($1);
 	 }
 	 | DO statement WHILE LPARENT expression RPARENT SEMICOLON {
 	 	$$ = new loop_node3($2,$5);//$$ = new loop_node3($2,$5);
 	 }
 	 
 	 | FOR LPARENT assignment SEMICOLON expression SEMICOLON assignment RPARENT {
+   
+   $$ = new loop_node($3,$5,$7);
 		
 	 } statement {
 	 	
+     $$ = $1;
 	 }
 	 | jump_statement
+   {
+   $$ = $1;
+   }
 	 ;
 
 
 jump_statement:
        CONTINUE SEMICOLON {
-		
+		$$ = new jump_node($1,$2);
      }
 	 | BREAK SEMICOLON {
-	 
+	 $$ = new jump_node1($1,$2);
 	 }
 	 | RETURN expression SEMICOLON {
-		 
+		
+    $$ = new jump_node2($1,$2); 
 	 }
 	 ;
 
