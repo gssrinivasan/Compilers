@@ -6,23 +6,18 @@
 #include <map>
 #include <list>
 #include "myc.h"
-
 using namespace std;
-
  extern FILE *yyin;
-
 // the root of the abstract syntax tree
  statement *root;
-
 // for keeping track of line numbers in the program we are parsing
   int line_num = 1;
-
 // function prototypes, we need the yylex return prototype so C++ won't complain
 int yylex();
 void yyerror(char * s);
 %}
 
-%start main
+%start status
  
 %union {
   float num;
@@ -37,11 +32,13 @@ void yyerror(char * s);
 //%token	<id> ID
 %token 	NOTOKEN LPARENT RPARENT LBRACE RBRACE LCURLY RCURLY COMA SEMICOLON EQUAL STRING_CONST INT FLOAT LONG LONGSTAR VOID CHAR CHARSTARSTAR INTEGER_CONST AMPERSAND OROR ANDAND EQUALEQUAL NOTEQUAL LESS GREAT LESSEQUAL GREATEQUAL PLUS MINUS TIMES DIVIDE PERCENT IF ELSE WHILE DO FOR CONTINUE BREAK RETURN 
 
-%type <st> main
+%type <st> status
 %type <st> function
 %type <st> global_var
 %type <st> call_arg_list
 %type <st> call_arguments
+%type <exp_node_ptr> program
+%type <exp_node_ptr> main
 %type <exp_node_ptr> arguments
 %type <exp_node_ptr> arg_list
 %type <exp_node_ptr> function_or_var_list
@@ -65,247 +62,366 @@ void yyerror(char * s);
 %type <exp_node_ptr> jump_statement
 
 %%
-main : function_or_var_list {}
+status:
+          main
+        {
+         root = $$;
+        }
+        | program
+        {
+         $$ = $1;
+        }
         ;
+       
+main: compound_statement
+        {
+        $$ = $1;
+        }
+      | expression
+        {
+         $$ = $1;
+        }
+      | call
+        {
+       $$ = $1; 
+        }
+  ;
+        
+program: function_or_var_list 
+        {  
+        $$ = $1;
+        }
+  ;
+
 
 function_or_var_list:
         function_or_var_list function
+        //new
         | function_or_var_list global_var
+        //new
         | expression
+         {$$ = $1;}
+        | compound_statement
+        {$$ = $1;}
 	;
 
 function:
-         var_type ID
+         var_type ID LPARENT arguments RPARENT compound_statement
          {
-
-	 	 }
-        LPARENT arguments RPARENT {
-         
-		 }
-        compound_statement
-         {
-   
+          //new
+          //new
+          $$ = $6;
          }
 	;
 
 arg_list:
-         arg
-         | arg_list COMA arg
-	 ;
+         arg 
+         {
+          $$ = $1;
+         }
+         | arg_list COMA arg 
+         {
+          //new
+         }
+  ;
 
 arguments:
          arg_list
-	 | /*empty*/
-	 ;
+         {
+          $$ = $1
+         }
+	       | /*empty*/
+  ;
 
-arg: var_type ID SEMICOLON {
-   };
+arg: 
+    var_type ID SEMICOLON 
+    {
+     //new    
+    }
+  ;
 
 global_var: 
-        var_type global_var_list SEMICOLON {
-
-		};
-
-global_var_list: ID {
-
+        var_type global_var_list SEMICOLON 
+        {
+         //new
         }
-| global_var_list COMA ID {
+  ;
 
-}
-        ;
+global_var_list: 
+         ID 
+         {
+          //new
+         }
+         | global_var_list COMA ID 
+         {
+          //new
+         }
+  ;
 
 var_type: CHAR | INT | FLOAT | CHARSTARSTAR | LONG | LONGSTAR | VOID
-		;
+  
+  ;
 		
 assignment:
-     ID EQUAL expression {
-	 	
-		}
-	 | ID LBRACE expression RBRACE EQUAL expression {
+          ID EQUAL expression 
+           {
+	 	        //new
+		       }
+	         | ID LBRACE expression RBRACE EQUAL expression 
+           {
+           //new
+           $$ = $3;
+           //new
+           $$ = $6;
+           }
+  ;
 
-	 	
-	 }
-	 ;
-
-call :
-	 ID LPARENT  call_arguments RPARENT {
-		
-	 }
+call:
+	  ID LPARENT  call_arguments RPARENT 
+    {
+		 //new
+      $$ = $3;
+    }
       ;
 
 call_arg_list:
-         expression {
-		
-	 }
-         | call_arg_list COMA expression {
-	
-	 }
+           expression 
+           {
+		        $$ = $1 ;
+	         }
+           |call_arg_list COMA expression 
+           {
+	          //new
+           }
 
 	 ;
 
 call_arguments:
-         call_arg_list 
-	 | /*empty*/ 
+            call_arg_list 
+            {
+             $$ = $1;
+            }
+	          | /*empty*/ 
 	 ;
 
-expression :
-         logical_or_expr
-	 ;
+expression:
+          logical_or_expr
+          {
+          $$ = $1;
+          }	 
+  ;
 
 logical_or_expr:
-         logical_and_expr
-	 | logical_or_expr OROR logical_and_expr {
-		
-	}
+              logical_and_expr
+              {
+               $$ = $1;
+              }
+	            | logical_or_expr OROR logical_and_expr 
+              {
+		           //new
+              }
 	 ;
 
 logical_and_expr:
-         equality_expr
-	 | logical_and_expr ANDAND equality_expr {
-		
-	}
+               equality_expr
+               {
+                $$ = $1;
+               }
+	             | logical_and_expr ANDAND equality_expr 
+               {
+	              //new
+               }
 	 ;
 
 equality_expr:
-         relational_expr
-	 | equality_expr EQUALEQUAL relational_expr {
-	 	
-	 }
-	 | equality_expr NOTEQUAL relational_expr {
-	 	
-	 }
-	 ;
+            relational_expr
+            {
+             $$ = $1;
+            }
+	          | equality_expr EQUALEQUAL relational_expr 
+            {
+             //new
+	 	        }
+	          | equality_expr NOTEQUAL relational_expr 
+            {
+             //new
+            }
+  ;
 
 relational_expr:
-         additive_expr
-	 | relational_expr LESS additive_expr {
-	 
-	 }
-	 | relational_expr GREAT additive_expr {
-	 	
-	 }
-	 | relational_expr LESSEQUAL additive_expr {
-	 	
-	 }
-	 | relational_expr GREATEQUAL additive_expr {
-	 	
-	 }
-	 ;
+              additive_expr
+              {
+               $$ = $1;
+              }
+	            | relational_expr LESS additive_expr 
+              {
+               //new
+	            }
+	            | relational_expr GREAT additive_expr 
+              {
+	 	           //new
+	            }
+              | relational_expr LESSEQUAL additive_expr 
+              {
+	 	           //new
+              }
+	            | relational_expr GREATEQUAL additive_expr 
+              {
+	 	           //new
+	            }
+  ;
 
 additive_expr:
-          multiplicative_expr
-	  | additive_expr PLUS multiplicative_expr {
-		
-	  }
-	  | additive_expr MINUS multiplicative_expr {
-	  	
-	  }
-	  ;
+            multiplicative_expr
+            {
+             $$ = $1;
+            }
+            | additive_expr PLUS multiplicative_expr 
+            {
+		          //new
+            }
+	          | additive_expr MINUS multiplicative_expr 
+            {
+	  	       //new
+            }
+  ;
 
 multiplicative_expr:
-          primary_expr
-	  | multiplicative_expr TIMES primary_expr {
-		
-      }
-	  | multiplicative_expr DIVIDE primary_expr {
-	  	
-	  }
-	  | multiplicative_expr PERCENT primary_expr {
-	  	
-	  }
-	  ;
+                  primary_expr
+                  {
+                   $$ = $1;
+                  }
+	                | multiplicative_expr TIMES primary_expr 
+                  {
+                   //new
+		              }
+	                | multiplicative_expr DIVIDE primary_expr 
+                  {
+                   //new
+  	              }
+	                | multiplicative_expr PERCENT primary_expr 
+                  {
+                   //new
+  	              }
+  ;
 
 primary_expr:
-	  call
-	| ID {
-		 
-	  }
-	  | ID LBRACE expression RBRACE {
-
-	  	
-		
-	  }
-	  
-	  | INTEGER_CONST {
-		  
-	  }
-	  | LPARENT expression RPARENT
-	  ;
+	          call
+            {
+             $$ = $1;
+            }         
+	          | ID 
+            {
+             $$ = $1;
+		        }
+	          | ID LBRACE expression RBRACE 
+            {
+              //new
+            }
+	          | LPARENT expression RPARENT
+            {
+             $$ = $2;
+            }         
+  ;
 
 compound_statement:
-	 LCURLY statement_list RCURLY
-	 ;
+	               LCURLY statement_list RCURLY
+                 {
+                  $$ = $2;
+                 }                        
+  ;
 
 statement_list:
-         statement_list statement
-	 | /*empty*/
-	 ;
+            statement_list statement
+            {
+             //new
+            }
+            | /*empty*/
+  ;
 
 local_var:
-        var_type local_var_list SEMICOLON {
-		
-		}
-		;
+        var_type local_var_list SEMICOLON 
+        {
+	       //new
+        }
+  ;
 
-local_var_list: ID {
-		
-			}
-        | local_var_list COMA ID {
-			
-			}
-        ;
+local_var_list: 
+              ID 
+              {
+		            $$ = $1;
+              }
+              | local_var_list COMA ID 
+              {
+			         //new
+              }
+  ;
 
 statement:
          assignment SEMICOLON
-	 | call SEMICOLON {
-	 	
-	 }
-	 | local_var
-	 | compound_statement
-	 | IF LPARENT expression RPARENT {
-
-	 
-	 } statement {
-	 	
-
-	 } 
-               else_optional {
-	 	
-	 }
-	 | WHILE LPARENT expression RPARENT {
-		
+         {
+          $$ = $1;
          }
-         statement {
-		
-	 }
-	 | DO statement WHILE LPARENT expression RPARENT SEMICOLON {
-	 	
-	 }
-	 
-	 | FOR LPARENT assignment SEMICOLON expression SEMICOLON assignment RPARENT {
-		
-	 } statement {
-	 	
-	 }
-	 | jump_statement
+	       | call SEMICOLON 
+         {
+          $$ = $1;
+	 	     }
+	       | local_var
+         {
+          $$ = $1;
+         }      
+	       | compound_statement
+         {
+          $$ = $1;
+         }      
+	       | IF LPARENT expression RPARENT LCURLY statement RCURLY
+         {
+          //new
+          $$ = $6
+         }
+         | IF LPARENT expression RPARENT LCURLY statement RCURLY ELSE LCURLY statement RCURLY
+         {
+          //new
+          $$ = $6 || $$ = $10; 
+         }
+	       | WHILE LPARENT expression RPARENT LCURLY statement RCURLY
+         {
+		      //new
+          $$ = $6;      
+         }
+         | DO statement WHILE LPARENT expression RPARENT SEMICOLON 
+         {
+          $$ = $2 ;
+          //new
+	 	     }
+	       | FOR LPARENT assignment SEMICOLON expression SEMICOLON assignment RPARENT LCURLY statement RCURLY
+         {
+	 	      //new
+          //new
+          //new
+          $$ = $10;           
+	       }
+	       | jump_statement
+         {
+          $$ = $1;
+         }      
 	 ;
 
-else_optional:
-         ELSE  statement
-	 | /* empty */
-         ;
 
 jump_statement:
-       CONTINUE SEMICOLON {
-		
-     }
-	 | BREAK SEMICOLON {
-	 
-	 }
-	 | RETURN expression SEMICOLON {
-		 
-	 }
-	 ;
+       CONTINUE SEMICOLON 
+       {
+        //new
+		   }
+	     | BREAK SEMICOLON 
+       {
+        //new
+	     }
+	     | RETURN expression SEMICOLON 
+       {
+        //new
+		   }
+  ;
 
 %%
 
@@ -333,5 +449,3 @@ void yyerror(const char * s)
 {
 	fprintf(stderr,"%s:%d: %s\n",line_num, s);
 }
-
-
