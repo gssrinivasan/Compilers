@@ -12,10 +12,7 @@
 %}
 
 %{
-// Ray Byler, CS560, 23 April 96
-// Expression Interpreter, Lexer Portion
 
-// y.tab.h contains the token number values produced by the parser
 #include <string.h>
 #include "simple.h"
 #include "y.tab.h"
@@ -25,6 +22,8 @@ extern int line_num;
 %}
 
 %option noyywrap
+DIGIT [0-9]
+LETTER [a-zA-Z]
 
 %%
 
@@ -41,11 +40,11 @@ extern int line_num;
 	}
 
 ")" 	{
-		return RPARENT;
+		return RSQUBRACKT;
 	}
 
 "[" 	{
-		return LBRACE;
+		return LSQUBRACKT;
 	}
 
 "]" 	{
@@ -59,6 +58,15 @@ extern int line_num;
 "}" 	{
 		return RCURLY;
 	}
+ 
+"[" 	{
+		return LSQUBRACKT;
+	}
+
+"[" 	{
+		return RSQUBRACKT;
+	}
+
 
 "," 	{
 		return COMA;
@@ -127,14 +135,15 @@ extern int line_num;
 "%"     {
                 return PERCENT;
         }
-
-"char*" { 
-		return CHARSTAR;
+        
+"main" {
+    return MAIN;  
+  }
+  
+"char" { 
+		return CHAR;
 	}
 
-"char**" { 
-		return CHARSTARSTAR;
-	}
 
 "long*" {
 		return LONGSTAR;
@@ -186,24 +195,34 @@ extern int line_num;
 "return" {
 		return RETURN;
 	}
-
-[A-Za-z][A-Za-z0-9]*  {
-		/* Assume that file names have only alpha chars */
-		yylval.id = strdup(yytext);
-		return WORD;
+ 
+print   { return PRINT; }
+{DIGIT}+ {
+	yylval.num = atof(yytext); return NUMBER;
 	}
 
--?[0-9][0-9]*  {
-		/* Assume that file names have only alpha chars */
-		yylval.id = strdup(yytext);
-		return INTEGER_CONST;
+{LETTER}[0-9a-zA-Z]* {
+        yylval.id = strdup(yytext); return ID;
 	}
 
-\"[^\"]*\"  {
-		/* Assume that file names have only alpha chars */
-		yylval.id = strdup(yytext);
-		return STRING_CONST;
-	}
+[ \t\f\r]	;		 // ignore white space
+//[A-Za-z][A-Za-z0-9]*  {
+//		/* Assume that file names have only alpha chars */
+//		yylval.id = strdup(yytext);
+//		return WORD;
+//	}
+
+//-?[0-9][0-9]*  {
+//		/* Assume that file names have only alpha chars */
+//		yylval.id = strdup(yytext);
+//		return INTEGER_CONST;
+//	}
+
+// \"[^\"]*\"  {
+//		/* Assume that file names have only alpha chars */
+//		yylval.id = strdup(yytext);
+//		return STRING_CONST;
+//	}
 
 .	{
 		/* Invalid character in input */
