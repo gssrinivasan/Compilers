@@ -30,7 +30,7 @@ void yyerror(char * s);
 %token <num> NUMBER
 %token <id> ID
 //%token	<id> ID
-%token 	NOTOKEN LPARENT RPARENT LBRACE RBRACE LCURLY RCURLY COMA SEMICOLON EQUAL STRING_CONST INT FLOAT LONG LONGSTAR VOID CHAR CHARSTARSTAR INTEGER_CONST AMPERSAND OROR ANDAND EQUALEQUAL NOTEQUAL LESS GREAT LESSEQUAL GREATEQUAL PLUS MINUS TIMES DIVIDE PERCENT IF ELSE WHILE DO FOR CONTINUE BREAK RETURN 
+%token 	NOTOKEN LPARENT RPARENT LCURLY RCURLY COMA SEMICOLON EQUAL INT FLOAT LONG VOID CHAR CHARSTARSTAR AMPERSAND OROR ANDAND EQUALEQUAL NOTEQUAL LESS GREAT LESSEQUAL GREATEQUAL PLUS MINUS TIMES DIVIDE PERCENT IF ELSE WHILE DO FOR CONTINUE BREAK RETURN LSQUBRACKT RSQUBRACKT MAIN
 
 %type <st> status
 %type <st> function
@@ -45,6 +45,7 @@ void yyerror(char * s);
 %type <exp_node_ptr> statement
 %type <exp_node_ptr> assignment
 %type <exp_node_ptr> local_var
+%type <exp_node_ptr> array
 %type <exp_node_ptr> compound_statement
 %type <exp_node_ptr> statement_list
 %type <exp_node_ptr> arg
@@ -63,37 +64,29 @@ void yyerror(char * s);
 
 %%
 status:
-          main
+         program
         {
          root = $$;
         }
-        | program
-        {
-         $$ = $1;
-        }
-        ;
-       
-main: compound_statement
-        {
-        $$ = $1;
-        }
-      | expression
-        {
-         $$ = $1;
-        }
-      | call
-        {
-       $$ = $1; 
-        }
   ;
         
-program: function_or_var_list 
-        {  
-        $$ = $1;
-        }
+program: 
+      function_or_var_list main 
+         {
+         $$=$1;
+         }
+         | main
+         {
+          $$=$1;
+         }
   ;
-
-
+        
+main: 
+   var_type MAIN LPARENT arguments RPARENT LCURLY compound_statement RCURLY
+   {
+     $$ = $7;
+   } 
+  ;        
 function_or_var_list:
         function_or_var_list function
         //new
@@ -158,19 +151,40 @@ global_var_list:
          }
   ;
 
-var_type: CHAR | INT | FLOAT | CHARSTARSTAR | LONG | LONGSTAR | VOID
+var_type:
+       array 
+       {
+       //new
+       }
+       | CHAR 
+       | INT 
+       | FLOAT 
+       | CHARSTARSTAR 
+       | LONG  
+       | VOID
   
   ;
+
+
+array: 
+     var_type ID LSQUBRACKT NUMBER RSQUBRACKT SEMICOLON
+     {
+      //new
+     }
+     | var_type ID LSQUBRACKT NUMBER RSQUBRACKT LSQUBRACKT NUMBER RSQUBRACKT SEMICOLON 
+     {
+      //new
+     }
+;
+
 		
 assignment:
           ID EQUAL expression 
            {
 	 	        //new
 		       }
-	         | ID LBRACE expression RBRACE EQUAL expression 
+	         | ID LSQUBRACKT NUMBER RSQUBRACKT EQUAL expression 
            {
-           //new
-           $$ = $3;
            //new
            $$ = $6;
            }
@@ -201,7 +215,10 @@ call_arguments:
             {
              $$ = $1;
             }
-	          | /*empty*/ 
+	          | /*empty*/
+            {
+             $$ = new skip_stmt();
+            } 
 	 ;
 
 expression:
@@ -314,9 +331,13 @@ primary_expr:
             {
              $$ = $1;
 		        }
-	          | ID LBRACE expression RBRACE 
+	          | ID LSQUBRACKT NUMBER RSQUBRACKT
             {
-              //new
+              $$ = $1;
+            }
+            |NUMBER
+            {
+              $$ = $1;
             }
 	          | LPARENT expression RPARENT
             {
@@ -337,6 +358,9 @@ statement_list:
              //new
             }
             | /*empty*/
+            {
+             $$ = new skip_stmt();
+            } 
   ;
 
 local_var:
