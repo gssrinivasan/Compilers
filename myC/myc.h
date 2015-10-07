@@ -5,26 +5,57 @@
 #include <list>
 
 using namespace std;
-
 class exp_node {
   public:
-
-    // print function for pretty printing an expression
     virtual void print() = 0;
-
-    // evaluation function for a leaf, replaced for interior nodes
-    virtual float evaluate() = 0;
 };
 
 class operator_node : public exp_node {
 public:
     exp_node *left;
     exp_node *right;
-
-  // the constructor for node links the node to its children,
-  // and stores the character representation of the operator.
     operator_node(exp_node *L, exp_node *R);
 };
+class number_node : public exp_node {
+ private:
+    float num;
+
+ public:
+  number_node(float value);
+  void print();
+};
+
+class id_node : public exp_node {
+protected:
+  string id, var_type;
+
+public:
+  id_node(String var_type, string value);
+  void print();
+};
+
+class function_or_var_list: public exp_node {
+ protected:
+  statement *function, exp_node *function_or_var_list, statement *global_var;
+ public:
+  func_node(exp_node *function_or_var_list, statement *function);
+  void print();
+  func_node1(exp_node *function_or_var_list, statement *global_var);
+  void print();
+};
+
+class function: public statement, id_node, arg_node {
+ protected:
+ string var_type, id;
+ exp_node *arg_node;
+ public:
+ id_node (var_type, id);
+ void print();
+ arg_node	(arg_node); //need to be defined
+ void print();
+};
+
+/*
 
 class number_node : public exp_node {
  private:
@@ -33,7 +64,7 @@ class number_node : public exp_node {
  public:
   number_node(float value);
   void print();
-  float evaluate();
+  //float evaluate();
 };
 
 class unary_minus_node : public exp_node {
@@ -42,7 +73,7 @@ class unary_minus_node : public exp_node {
  public:
   unary_minus_node(exp_node *exp);
   void print();
-  float evaluate();
+  //float evaluate();
 };
 
 class id_node : public exp_node {
@@ -52,7 +83,7 @@ protected:
 public:
   id_node(string value);
   void print();
-  float evaluate();
+  //float evaluate();
 };
 
 // plus_node inherits the characteristics of node and adds its own evaluate function
@@ -62,7 +93,7 @@ class plus_node : public operator_node {
   // plus_node's constructor just uses node's constructor
   plus_node(exp_node *L, exp_node *R);
   void print();
-  float evaluate();
+  //float evaluate();
 };
 
 
@@ -72,7 +103,7 @@ class minus_node : public operator_node {
 
   minus_node(exp_node *L, exp_node *R);
   void print();
-  float evaluate();
+  //float evaluate();
 };
 
 
@@ -82,7 +113,7 @@ class times_node : public operator_node {
 
   times_node(exp_node *L, exp_node *R);
   void print();
-  float evaluate();
+  //float evaluate();
 };
 
 
@@ -92,13 +123,13 @@ class divide_node : public operator_node {
 
   divide_node(exp_node *L, exp_node *R);
   void print();
-  float evaluate();
+  //float evaluate();
 };
 
 class statement {
  public:
   virtual void print() {}
-  virtual void evaluate() = 0;
+  //virtual void evaluate() = 0;
 };
 
 class assignment_stmt : public statement {
@@ -108,7 +139,7 @@ class assignment_stmt : public statement {
  public:
   assignment_stmt(string name, exp_node *expression);
   void print();
-  void evaluate();
+  //void evaluate();
 };
 
 class print_stmt: public statement {
@@ -117,14 +148,14 @@ class print_stmt: public statement {
  public:
   print_stmt(exp_node *myexp);
   void print();
-  void evaluate();
+  //void evaluate();
 };
 
 class skip_stmt: public statement {
  public:
   skip_stmt();
   void print();
-  void evaluate();
+  //void evaluate();
 };
 
 
@@ -134,9 +165,10 @@ class sequence_stmt: public statement {
  public:
   sequence_stmt(statement *mystmt1, statement *mystmt2);
   void print();
-  void evaluate();
+  //void evaluate();
 };
 
+*/
 // the object at the base of our tree
 extern map<string, float> idTable;
 
