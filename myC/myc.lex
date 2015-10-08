@@ -1,5 +1,5 @@
 /*
- * simple.l: simple scanner for the simple "myC-" language
+ *scanner for the simple "myC-" language
  *
  */
 
@@ -14,7 +14,7 @@
 %{
 
 #include <string.h>
-#include "simple.h"
+#include "myc.h"
 #include "y.tab.h"
 
 extern int line_num;
@@ -25,30 +25,22 @@ extern int line_num;
 DIGIT [0-9]
 LETTER [a-zA-Z]
 
+%x ERROR
+
 %%
 
-\n 	{
-		line_num++;
-	}
-
-[ \t\r]	{
-		/* Discard newlines, spaces, and tabs */
-     	}	
+\n      
+{ 
+line_num++;
+YY_FLUSH_BUFFER;
+ }
 
 "(" 	{
 		return LPARENT;
 	}
 
 ")" 	{
-		return RSQUBRACKT;
-	}
-
-"[" 	{
-		return LSQUBRACKT;
-	}
-
-"]" 	{
-		return RBRACE;
+		return RPARENT;
 	}
 
 "{" 	{
@@ -63,7 +55,7 @@ LETTER [a-zA-Z]
 		return LSQUBRACKT;
 	}
 
-"[" 	{
+"]" 	{
 		return RSQUBRACKT;
 	}
 
@@ -144,11 +136,6 @@ LETTER [a-zA-Z]
 		return CHAR;
 	}
 
-
-"long*" {
-		return LONGSTAR;
-	}
-
 "long" 	{
 		return LONG;
 	}
@@ -196,7 +183,6 @@ LETTER [a-zA-Z]
 		return RETURN;
 	}
  
-print   { return PRINT; }
 {DIGIT}+ {
 	yylval.num = atof(yytext); return NUMBER;
 	}
@@ -206,28 +192,11 @@ print   { return PRINT; }
 	}
 
 [ \t\f\r]	;		 // ignore white space
-//[A-Za-z][A-Za-z0-9]*  {
-//		/* Assume that file names have only alpha chars */
-//		yylval.id = strdup(yytext);
-//		return WORD;
-//	}
 
-//-?[0-9][0-9]*  {
-//		/* Assume that file names have only alpha chars */
-//		yylval.id = strdup(yytext);
-//		return INTEGER_CONST;
-//	}
-
-// \"[^\"]*\"  {
-//		/* Assume that file names have only alpha chars */
-//		yylval.id = strdup(yytext);
-//		return STRING_CONST;
-//	}
-
-.	{
-		/* Invalid character in input */
-		return NOTOKEN;
-	}
-
+. { BEGIN(ERROR); yymore(); }
+<ERROR>[^{DIGIT}{LETTER}+\-\*(){}= \t\n\f\r] { yymore(); }
+<ERROR>(.|\n) { yyless(yyleng-1); printf("error token: %s on line %d\n", yytext, line_num); 
+           BEGIN(INITIAL); }
+           
 %%
 	
