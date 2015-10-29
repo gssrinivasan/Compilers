@@ -1,0 +1,14 @@
+int main(int a)
+{
+int x = 2;
+int y = 4;
+int j = 0;
+if (x == 2 || y ==2)
+{
+j = j+1;
+}
+int k= 3;
+int m [5];
+int a [4][5];
+
+}

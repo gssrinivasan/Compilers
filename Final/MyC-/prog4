@@ -1,0 +1,8 @@
+void main()
+{
+int i = 1;
+for (i; i<3 ; i+1)
+{
+j+1;
+}
+}

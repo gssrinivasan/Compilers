@@ -1,0 +1,1887 @@
+Terminals unused in grammar
+
+   NOTOKEN
+   AMPERSAND
+   CONTINUE
+   BREAK
+
+
+Grammar
+
+    0 $accept: status $end
+
+    1 status: program
+
+    2 program: function_list
+
+    3 function_list: function_list function
+    4              | function_list global_var
+    5              | /* empty */
+
+    6 function: var_type ID LPARENT arguments RPARENT compound_stmt
+
+    7 compound_stmt: LCURLY statement_list RCURLY
+
+    8 arguments: arg_list
+    9          | /* empty */
+
+   10 arg_list: arg
+   11         | arg_list COMA arg
+
+   12 arg: var_type ID
+
+   13 global_var: var_type ID global_var_list SEMICOLON
+
+   14 global_var_list: global_var_list COMA ID
+   15                | /* empty */
+
+   16 var_type: CHAR
+   17         | INT
+   18         | FLOAT
+   19         | CHARSTAR
+   20         | LONG
+   21         | VOID
+
+   22 array: var_type ID LSQUBRACKT NUMBER RSQUBRACKT SEMICOLON
+   23      | var_type ID LSQUBRACKT NUMBER RSQUBRACKT LSQUBRACKT NUMBER RSQUBRACKT SEMICOLON
+
+   24 assignment: global_var
+   25           | array
+   26           | var_type ID EQUAL primary_expr SEMICOLON
+   27           | expression SEMICOLON
+   28           | ID EQUAL expression SEMICOLON
+
+   29 primary_expr: ID
+   30             | ID LSQUBRACKT NUMBER RSQUBRACKT
+   31             | ID LSQUBRACKT NUMBER RSQUBRACKT LSQUBRACKT NUMBER RSQUBRACKT
+   32             | NUMBER
+   33             | LPARENT expression RPARENT
+
+   34 call: ID LPARENT call_arguments RPARENT
+
+   35 call_arguments: call_arg_list
+   36               | /* empty */
+
+   37 call_arg_list: primary_expr
+   38              | call_arg_list COMA primary_expr
+
+   39 expression: logical_or_expr
+
+   40 logical_or_expr: logical_and_expr
+   41                | logical_or_expr OROR logical_and_expr
+
+   42 logical_and_expr: equality_expr
+   43                 | logical_and_expr ANDAND equality_expr
+
+   44 equality_expr: relational_expr
+   45              | equality_expr EQUALEQUAL relational_expr
+   46              | equality_expr NOTEQUAL relational_expr
+
+   47 relational_expr: additive_expr
+   48                | relational_expr LESS additive_expr
+   49                | relational_expr GREAT additive_expr
+   50                | relational_expr LESSEQUAL additive_expr
+   51                | relational_expr GREATEQUAL additive_expr
+
+   52 additive_expr: multiplicative_expr
+   53              | additive_expr PLUS multiplicative_expr
+   54              | additive_expr MINUS multiplicative_expr
+
+   55 multiplicative_expr: primary_expr
+   56                    | multiplicative_expr TIMES primary_expr
+   57                    | multiplicative_expr DIVIDE primary_expr
+   58                    | multiplicative_expr PERCENT primary_expr
+
+   59 statement_list: statement statement_list
+   60               | return_stmt
+   61               | /* empty */
+
+   62 statement: assignment
+   63          | call SEMICOLON
+   64          | conditional_statement
+
+   65 return_stmt: RETURN LPARENT primary_expr RPARENT SEMICOLON
+
+   66 conditional_statement: IF LPARENT expression RPARENT LCURLY statement_list RCURLY
+   67                      | IF LPARENT expression RPARENT LCURLY statement_list RCURLY ELSE LCURLY statement_list RCURLY
+   68                      | WHILE LPARENT expression RPARENT LCURLY statement_list RCURLY
+   69                      | DO LCURLY statement_list RCURLY WHILE LPARENT expression RPARENT SEMICOLON
+   70                      | FOR LPARENT ID SEMICOLON expression SEMICOLON expression RPARENT LCURLY statement_list RCURLY
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+error (256)
+ID (258) 6 12 13 14 22 23 26 28 29 30 31 34 70
+NUMBER (259) 22 23 30 31 32
+NOTOKEN (260)
+LPARENT (261) 6 33 34 65 66 67 68 69 70
+RPARENT (262) 6 33 34 65 66 67 68 69 70
+LCURLY (263) 7 66 67 68 69 70
+RCURLY (264) 7 66 67 68 69 70
+COMA (265) 11 14 38
+SEMICOLON (266) 13 22 23 26 27 28 63 65 69 70
+EQUAL (267) 26 28
+INT (268) 17
+FLOAT (269) 18
+LONG (270) 20
+VOID (271) 21
+CHAR (272) 16
+CHARSTAR (273) 19
+AMPERSAND (274)
+OROR (275) 41
+ANDAND (276) 43
+EQUALEQUAL (277) 45
+NOTEQUAL (278) 46
+LESS (279) 48
+GREAT (280) 49
+LESSEQUAL (281) 50
+GREATEQUAL (282) 51
+PLUS (283) 53
+MINUS (284) 54
+TIMES (285) 56
+DIVIDE (286) 57
+PERCENT (287) 58
+IF (288) 66 67
+ELSE (289) 67
+WHILE (290) 68 69
+DO (291) 69
+FOR (292) 70
+CONTINUE (293)
+BREAK (294)
+RETURN (295) 65
+LSQUBRACKT (296) 22 23 30 31
+RSQUBRACKT (297) 22 23 30 31
+LOWER_THAN_ELSE (298)
+
+
+Nonterminals, with rules where they appear
+
+$accept (44)
+    on left: 0
+status (45)
+    on left: 1, on right: 0
+program (46)
+    on left: 2, on right: 1
+function_list (47)
+    on left: 3 4 5, on right: 2 3 4
+function (48)
+    on left: 6, on right: 3
+compound_stmt (49)
+    on left: 7, on right: 6
+arguments (50)
+    on left: 8 9, on right: 6
+arg_list (51)
+    on left: 10 11, on right: 8 11
+arg (52)
+    on left: 12, on right: 10 11
+global_var (53)
+    on left: 13, on right: 4 24
+global_var_list (54)
+    on left: 14 15, on right: 13 14
+var_type (55)
+    on left: 16 17 18 19 20 21, on right: 6 12 13 22 23 26
+array (56)
+    on left: 22 23, on right: 25
+assignment (57)
+    on left: 24 25 26 27 28, on right: 62
+primary_expr (58)
+    on left: 29 30 31 32 33, on right: 26 37 38 55 56 57 58 65
+call (59)
+    on left: 34, on right: 63
+call_arguments (60)
+    on left: 35 36, on right: 34
+call_arg_list (61)
+    on left: 37 38, on right: 35 38
+expression (62)
+    on left: 39, on right: 27 28 33 66 67 68 69 70
+logical_or_expr (63)
+    on left: 40 41, on right: 39 41
+logical_and_expr (64)
+    on left: 42 43, on right: 40 41 43
+equality_expr (65)
+    on left: 44 45 46, on right: 42 43 45 46
+relational_expr (66)
+    on left: 47 48 49 50 51, on right: 44 45 46 48 49 50 51
+additive_expr (67)
+    on left: 52 53 54, on right: 47 48 49 50 51 53 54
+multiplicative_expr (68)
+    on left: 55 56 57 58, on right: 52 53 54 56 57 58
+statement_list (69)
+    on left: 59 60 61, on right: 7 59 66 67 68 69 70
+statement (70)
+    on left: 62 63 64, on right: 59
+return_stmt (71)
+    on left: 65, on right: 60
+conditional_statement (72)
+    on left: 66 67 68 69 70, on right: 64
+
+
+state 0
+
+    0 $accept: . status $end
+
+    $default  reduce using rule 5 (function_list)
+
+    status         go to state 1
+    program        go to state 2
+    function_list  go to state 3
+
+
+state 1
+
+    0 $accept: status . $end
+
+    $end  shift, and go to state 4
+
+
+state 2
+
+    1 status: program .
+
+    $default  reduce using rule 1 (status)
+
+
+state 3
+
+    2 program: function_list .
+    3 function_list: function_list . function
+    4              | function_list . global_var
+
+    INT       shift, and go to state 5
+    FLOAT     shift, and go to state 6
+    LONG      shift, and go to state 7
+    VOID      shift, and go to state 8
+    CHAR      shift, and go to state 9
+    CHARSTAR  shift, and go to state 10
+
+    $default  reduce using rule 2 (program)
+
+    function    go to state 11
+    global_var  go to state 12
+    var_type    go to state 13
+
+
+state 4
+
+    0 $accept: status $end .
+
+    $default  accept
+
+
+state 5
+
+   17 var_type: INT .
+
+    $default  reduce using rule 17 (var_type)
+
+
+state 6
+
+   18 var_type: FLOAT .
+
+    $default  reduce using rule 18 (var_type)
+
+
+state 7
+
+   20 var_type: LONG .
+
+    $default  reduce using rule 20 (var_type)
+
+
+state 8
+
+   21 var_type: VOID .
+
+    $default  reduce using rule 21 (var_type)
+
+
+state 9
+
+   16 var_type: CHAR .
+
+    $default  reduce using rule 16 (var_type)
+
+
+state 10
+
+   19 var_type: CHARSTAR .
+
+    $default  reduce using rule 19 (var_type)
+
+
+state 11
+
+    3 function_list: function_list function .
+
+    $default  reduce using rule 3 (function_list)
+
+
+state 12
+
+    4 function_list: function_list global_var .
+
+    $default  reduce using rule 4 (function_list)
+
+
+state 13
+
+    6 function: var_type . ID LPARENT arguments RPARENT compound_stmt
+   13 global_var: var_type . ID global_var_list SEMICOLON
+
+    ID  shift, and go to state 14
+
+
+state 14
+
+    6 function: var_type ID . LPARENT arguments RPARENT compound_stmt
+   13 global_var: var_type ID . global_var_list SEMICOLON
+
+    LPARENT  shift, and go to state 15
+
+    $default  reduce using rule 15 (global_var_list)
+
+    global_var_list  go to state 16
+
+
+state 15
+
+    6 function: var_type ID LPARENT . arguments RPARENT compound_stmt
+
+    INT       shift, and go to state 5
+    FLOAT     shift, and go to state 6
+    LONG      shift, and go to state 7
+    VOID      shift, and go to state 8
+    CHAR      shift, and go to state 9
+    CHARSTAR  shift, and go to state 10
+
+    $default  reduce using rule 9 (arguments)
+
+    arguments  go to state 17
+    arg_list   go to state 18
+    arg        go to state 19
+    var_type   go to state 20
+
+
+state 16
+
+   13 global_var: var_type ID global_var_list . SEMICOLON
+   14 global_var_list: global_var_list . COMA ID
+
+    COMA       shift, and go to state 21
+    SEMICOLON  shift, and go to state 22
+
+
+state 17
+
+    6 function: var_type ID LPARENT arguments . RPARENT compound_stmt
+
+    RPARENT  shift, and go to state 23
+
+
+state 18
+
+    8 arguments: arg_list .
+   11 arg_list: arg_list . COMA arg
+
+    COMA  shift, and go to state 24
+
+    $default  reduce using rule 8 (arguments)
+
+
+state 19
+
+   10 arg_list: arg .
+
+    $default  reduce using rule 10 (arg_list)
+
+
+state 20
+
+   12 arg: var_type . ID
+
+    ID  shift, and go to state 25
+
+
+state 21
+
+   14 global_var_list: global_var_list COMA . ID
+
+    ID  shift, and go to state 26
+
+
+state 22
+
+   13 global_var: var_type ID global_var_list SEMICOLON .
+
+    $default  reduce using rule 13 (global_var)
+
+
+state 23
+
+    6 function: var_type ID LPARENT arguments RPARENT . compound_stmt
+
+    LCURLY  shift, and go to state 27
+
+    compound_stmt  go to state 28
+
+
+state 24
+
+   11 arg_list: arg_list COMA . arg
+
+    INT       shift, and go to state 5
+    FLOAT     shift, and go to state 6
+    LONG      shift, and go to state 7
+    VOID      shift, and go to state 8
+    CHAR      shift, and go to state 9
+    CHARSTAR  shift, and go to state 10
+
+    arg       go to state 29
+    var_type  go to state 20
+
+
+state 25
+
+   12 arg: var_type ID .
+
+    $default  reduce using rule 12 (arg)
+
+
+state 26
+
+   14 global_var_list: global_var_list COMA ID .
+
+    $default  reduce using rule 14 (global_var_list)
+
+
+state 27
+
+    7 compound_stmt: LCURLY . statement_list RCURLY
+
+    ID        shift, and go to state 30
+    NUMBER    shift, and go to state 31
+    LPARENT   shift, and go to state 32
+    INT       shift, and go to state 5
+    FLOAT     shift, and go to state 6
+    LONG      shift, and go to state 7
+    VOID      shift, and go to state 8
+    CHAR      shift, and go to state 9
+    CHARSTAR  shift, and go to state 10
+    IF        shift, and go to state 33
+    WHILE     shift, and go to state 34
+    DO        shift, and go to state 35
+    FOR       shift, and go to state 36
+    RETURN    shift, and go to state 37
+
+    $default  reduce using rule 61 (statement_list)
+
+    global_var             go to state 38
+    var_type               go to state 39
+    array                  go to state 40
+    assignment             go to state 41
+    primary_expr           go to state 42
+    call                   go to state 43
+    expression             go to state 44
+    logical_or_expr        go to state 45
+    logical_and_expr       go to state 46
+    equality_expr          go to state 47
+    relational_expr        go to state 48
+    additive_expr          go to state 49
+    multiplicative_expr    go to state 50
+    statement_list         go to state 51
+    statement              go to state 52
+    return_stmt            go to state 53
+    conditional_statement  go to state 54
+
+
+state 28
+
+    6 function: var_type ID LPARENT arguments RPARENT compound_stmt .
+
+    $default  reduce using rule 6 (function)
+
+
+state 29
+
+   11 arg_list: arg_list COMA arg .
+
+    $default  reduce using rule 11 (arg_list)
+
+
+state 30
+
+   28 assignment: ID . EQUAL expression SEMICOLON
+   29 primary_expr: ID .
+   30             | ID . LSQUBRACKT NUMBER RSQUBRACKT
+   31             | ID . LSQUBRACKT NUMBER RSQUBRACKT LSQUBRACKT NUMBER RSQUBRACKT
+   34 call: ID . LPARENT call_arguments RPARENT
+
+    LPARENT     shift, and go to state 55
+    EQUAL       shift, and go to state 56
+    LSQUBRACKT  shift, and go to state 57
+
+    $default  reduce using rule 29 (primary_expr)
+
+
+state 31
+
+   32 primary_expr: NUMBER .
+
+    $default  reduce using rule 32 (primary_expr)
+
+
+state 32
+
+   33 primary_expr: LPARENT . expression RPARENT
+
+    ID       shift, and go to state 58
+    NUMBER   shift, and go to state 31
+    LPARENT  shift, and go to state 32
+
+    primary_expr         go to state 42
+    expression           go to state 59
+    logical_or_expr      go to state 45
+    logical_and_expr     go to state 46
+    equality_expr        go to state 47
+    relational_expr      go to state 48
+    additive_expr        go to state 49
+    multiplicative_expr  go to state 50
+
+
+state 33
+
+   66 conditional_statement: IF . LPARENT expression RPARENT LCURLY statement_list RCURLY
+   67                      | IF . LPARENT expression RPARENT LCURLY statement_list RCURLY ELSE LCURLY statement_list RCURLY
+
+    LPARENT  shift, and go to state 60
+
+
+state 34
+
+   68 conditional_statement: WHILE . LPARENT expression RPARENT LCURLY statement_list RCURLY
+
+    LPARENT  shift, and go to state 61
+
+
+state 35
+
+   69 conditional_statement: DO . LCURLY statement_list RCURLY WHILE LPARENT expression RPARENT SEMICOLON
+
+    LCURLY  shift, and go to state 62
+
+
+state 36
+
+   70 conditional_statement: FOR . LPARENT ID SEMICOLON expression SEMICOLON expression RPARENT LCURLY statement_list RCURLY
+
+    LPARENT  shift, and go to state 63
+
+
+state 37
+
+   65 return_stmt: RETURN . LPARENT primary_expr RPARENT SEMICOLON
+
+    LPARENT  shift, and go to state 64
+
+
+state 38
+
+   24 assignment: global_var .
+
+    $default  reduce using rule 24 (assignment)
+
+
+state 39
+
+   13 global_var: var_type . ID global_var_list SEMICOLON
+   22 array: var_type . ID LSQUBRACKT NUMBER RSQUBRACKT SEMICOLON
+   23      | var_type . ID LSQUBRACKT NUMBER RSQUBRACKT LSQUBRACKT NUMBER RSQUBRACKT SEMICOLON
+   26 assignment: var_type . ID EQUAL primary_expr SEMICOLON
+
+    ID  shift, and go to state 65
+
+
+state 40
+
+   25 assignment: array .
+
+    $default  reduce using rule 25 (assignment)
+
+
+state 41
+
+   62 statement: assignment .
+
+    $default  reduce using rule 62 (statement)
+
+
+state 42
+
+   55 multiplicative_expr: primary_expr .
+
+    $default  reduce using rule 55 (multiplicative_expr)
+
+
+state 43
+
+   63 statement: call . SEMICOLON
+
+    SEMICOLON  shift, and go to state 66
+
+
+state 44
+
+   27 assignment: expression . SEMICOLON
+
+    SEMICOLON  shift, and go to state 67
+
+
+state 45
+
+   39 expression: logical_or_expr .
+   41 logical_or_expr: logical_or_expr . OROR logical_and_expr
+
+    OROR  shift, and go to state 68
+
+    $default  reduce using rule 39 (expression)
+
+
+state 46
+
+   40 logical_or_expr: logical_and_expr .
+   43 logical_and_expr: logical_and_expr . ANDAND equality_expr
+
+    ANDAND  shift, and go to state 69
+
+    $default  reduce using rule 40 (logical_or_expr)
+
+
+state 47
+
+   42 logical_and_expr: equality_expr .
+   45 equality_expr: equality_expr . EQUALEQUAL relational_expr
+   46              | equality_expr . NOTEQUAL relational_expr
+
+    EQUALEQUAL  shift, and go to state 70
+    NOTEQUAL    shift, and go to state 71
+
+    $default  reduce using rule 42 (logical_and_expr)
+
+
+state 48
+
+   44 equality_expr: relational_expr .
+   48 relational_expr: relational_expr . LESS additive_expr
+   49                | relational_expr . GREAT additive_expr
+   50                | relational_expr . LESSEQUAL additive_expr
+   51                | relational_expr . GREATEQUAL additive_expr
+
+    LESS        shift, and go to state 72
+    GREAT       shift, and go to state 73
+    LESSEQUAL   shift, and go to state 74
+    GREATEQUAL  shift, and go to state 75
+
+    $default  reduce using rule 44 (equality_expr)
+
+
+state 49
+
+   47 relational_expr: additive_expr .
+   53 additive_expr: additive_expr . PLUS multiplicative_expr
+   54              | additive_expr . MINUS multiplicative_expr
+
+    PLUS   shift, and go to state 76
+    MINUS  shift, and go to state 77
+
+    $default  reduce using rule 47 (relational_expr)
+
+
+state 50
+
+   52 additive_expr: multiplicative_expr .
+   56 multiplicative_expr: multiplicative_expr . TIMES primary_expr
+   57                    | multiplicative_expr . DIVIDE primary_expr
+   58                    | multiplicative_expr . PERCENT primary_expr
+
+    TIMES    shift, and go to state 78
+    DIVIDE   shift, and go to state 79
+    PERCENT  shift, and go to state 80
+
+    $default  reduce using rule 52 (additive_expr)
+
+
+state 51
+
+    7 compound_stmt: LCURLY statement_list . RCURLY
+
+    RCURLY  shift, and go to state 81
+
+
+state 52
+
+   59 statement_list: statement . statement_list
+
+    ID        shift, and go to state 30
+    NUMBER    shift, and go to state 31
+    LPARENT   shift, and go to state 32
+    INT       shift, and go to state 5
+    FLOAT     shift, and go to state 6
+    LONG      shift, and go to state 7
+    VOID      shift, and go to state 8
+    CHAR      shift, and go to state 9
+    CHARSTAR  shift, and go to state 10
+    IF        shift, and go to state 33
+    WHILE     shift, and go to state 34
+    DO        shift, and go to state 35
+    FOR       shift, and go to state 36
+    RETURN    shift, and go to state 37
+
+    $default  reduce using rule 61 (statement_list)
+
+    global_var             go to state 38
+    var_type               go to state 39
+    array                  go to state 40
+    assignment             go to state 41
+    primary_expr           go to state 42
+    call                   go to state 43
+    expression             go to state 44
+    logical_or_expr        go to state 45
+    logical_and_expr       go to state 46
+    equality_expr          go to state 47
+    relational_expr        go to state 48
+    additive_expr          go to state 49
+    multiplicative_expr    go to state 50
+    statement_list         go to state 82
+    statement              go to state 52
+    return_stmt            go to state 53
+    conditional_statement  go to state 54
+
+
+state 53
+
+   60 statement_list: return_stmt .
+
+    $default  reduce using rule 60 (statement_list)
+
+
+state 54
+
+   64 statement: conditional_statement .
+
+    $default  reduce using rule 64 (statement)
+
+
+state 55
+
+   34 call: ID LPARENT . call_arguments RPARENT
+
+    ID       shift, and go to state 58
+    NUMBER   shift, and go to state 31
+    LPARENT  shift, and go to state 32
+
+    $default  reduce using rule 36 (call_arguments)
+
+    primary_expr    go to state 83
+    call_arguments  go to state 84
+    call_arg_list   go to state 85
+
+
+state 56
+
+   28 assignment: ID EQUAL . expression SEMICOLON
+
+    ID       shift, and go to state 58
+    NUMBER   shift, and go to state 31
+    LPARENT  shift, and go to state 32
+
+    primary_expr         go to state 42
+    expression           go to state 86
+    logical_or_expr      go to state 45
+    logical_and_expr     go to state 46
+    equality_expr        go to state 47
+    relational_expr      go to state 48
+    additive_expr        go to state 49
+    multiplicative_expr  go to state 50
+
+
+state 57
+
+   30 primary_expr: ID LSQUBRACKT . NUMBER RSQUBRACKT
+   31             | ID LSQUBRACKT . NUMBER RSQUBRACKT LSQUBRACKT NUMBER RSQUBRACKT
+
+    NUMBER  shift, and go to state 87
+
+
+state 58
+
+   29 primary_expr: ID .
+   30             | ID . LSQUBRACKT NUMBER RSQUBRACKT
+   31             | ID . LSQUBRACKT NUMBER RSQUBRACKT LSQUBRACKT NUMBER RSQUBRACKT
+
+    LSQUBRACKT  shift, and go to state 57
+
+    $default  reduce using rule 29 (primary_expr)
+
+
+state 59
+
+   33 primary_expr: LPARENT expression . RPARENT
+
+    RPARENT  shift, and go to state 88
+
+
+state 60
+
+   66 conditional_statement: IF LPARENT . expression RPARENT LCURLY statement_list RCURLY
+   67                      | IF LPARENT . expression RPARENT LCURLY statement_list RCURLY ELSE LCURLY statement_list RCURLY
+
+    ID       shift, and go to state 58
+    NUMBER   shift, and go to state 31
+    LPARENT  shift, and go to state 32
+
+    primary_expr         go to state 42
+    expression           go to state 89
+    logical_or_expr      go to state 45
+    logical_and_expr     go to state 46
+    equality_expr        go to state 47
+    relational_expr      go to state 48
+    additive_expr        go to state 49
+    multiplicative_expr  go to state 50
+
+
+state 61
+
+   68 conditional_statement: WHILE LPARENT . expression RPARENT LCURLY statement_list RCURLY
+
+    ID       shift, and go to state 58
+    NUMBER   shift, and go to state 31
+    LPARENT  shift, and go to state 32
+
+    primary_expr         go to state 42
+    expression           go to state 90
+    logical_or_expr      go to state 45
+    logical_and_expr     go to state 46
+    equality_expr        go to state 47
+    relational_expr      go to state 48
+    additive_expr        go to state 49
+    multiplicative_expr  go to state 50
+
+
+state 62
+
+   69 conditional_statement: DO LCURLY . statement_list RCURLY WHILE LPARENT expression RPARENT SEMICOLON
+
+    ID        shift, and go to state 30
+    NUMBER    shift, and go to state 31
+    LPARENT   shift, and go to state 32
+    INT       shift, and go to state 5
+    FLOAT     shift, and go to state 6
+    LONG      shift, and go to state 7
+    VOID      shift, and go to state 8
+    CHAR      shift, and go to state 9
+    CHARSTAR  shift, and go to state 10
+    IF        shift, and go to state 33
+    WHILE     shift, and go to state 34
+    DO        shift, and go to state 35
+    FOR       shift, and go to state 36
+    RETURN    shift, and go to state 37
+
+    $default  reduce using rule 61 (statement_list)
+
+    global_var             go to state 38
+    var_type               go to state 39
+    array                  go to state 40
+    assignment             go to state 41
+    primary_expr           go to state 42
+    call                   go to state 43
+    expression             go to state 44
+    logical_or_expr        go to state 45
+    logical_and_expr       go to state 46
+    equality_expr          go to state 47
+    relational_expr        go to state 48
+    additive_expr          go to state 49
+    multiplicative_expr    go to state 50
+    statement_list         go to state 91
+    statement              go to state 52
+    return_stmt            go to state 53
+    conditional_statement  go to state 54
+
+
+state 63
+
+   70 conditional_statement: FOR LPARENT . ID SEMICOLON expression SEMICOLON expression RPARENT LCURLY statement_list RCURLY
+
+    ID  shift, and go to state 92
+
+
+state 64
+
+   65 return_stmt: RETURN LPARENT . primary_expr RPARENT SEMICOLON
+
+    ID       shift, and go to state 58
+    NUMBER   shift, and go to state 31
+    LPARENT  shift, and go to state 32
+
+    primary_expr  go to state 93
+
+
+state 65
+
+   13 global_var: var_type ID . global_var_list SEMICOLON
+   22 array: var_type ID . LSQUBRACKT NUMBER RSQUBRACKT SEMICOLON
+   23      | var_type ID . LSQUBRACKT NUMBER RSQUBRACKT LSQUBRACKT NUMBER RSQUBRACKT SEMICOLON
+   26 assignment: var_type ID . EQUAL primary_expr SEMICOLON
+
+    EQUAL       shift, and go to state 94
+    LSQUBRACKT  shift, and go to state 95
+
+    $default  reduce using rule 15 (global_var_list)
+
+    global_var_list  go to state 16
+
+
+state 66
+
+   63 statement: call SEMICOLON .
+
+    $default  reduce using rule 63 (statement)
+
+
+state 67
+
+   27 assignment: expression SEMICOLON .
+
+    $default  reduce using rule 27 (assignment)
+
+
+state 68
+
+   41 logical_or_expr: logical_or_expr OROR . logical_and_expr
+
+    ID       shift, and go to state 58
+    NUMBER   shift, and go to state 31
+    LPARENT  shift, and go to state 32
+
+    primary_expr         go to state 42
+    logical_and_expr     go to state 96
+    equality_expr        go to state 47
+    relational_expr      go to state 48
+    additive_expr        go to state 49
+    multiplicative_expr  go to state 50
+
+
+state 69
+
+   43 logical_and_expr: logical_and_expr ANDAND . equality_expr
+
+    ID       shift, and go to state 58
+    NUMBER   shift, and go to state 31
+    LPARENT  shift, and go to state 32
+
+    primary_expr         go to state 42
+    equality_expr        go to state 97
+    relational_expr      go to state 48
+    additive_expr        go to state 49
+    multiplicative_expr  go to state 50
+
+
+state 70
+
+   45 equality_expr: equality_expr EQUALEQUAL . relational_expr
+
+    ID       shift, and go to state 58
+    NUMBER   shift, and go to state 31
+    LPARENT  shift, and go to state 32
+
+    primary_expr         go to state 42
+    relational_expr      go to state 98
+    additive_expr        go to state 49
+    multiplicative_expr  go to state 50
+
+
+state 71
+
+   46 equality_expr: equality_expr NOTEQUAL . relational_expr
+
+    ID       shift, and go to state 58
+    NUMBER   shift, and go to state 31
+    LPARENT  shift, and go to state 32
+
+    primary_expr         go to state 42
+    relational_expr      go to state 99
+    additive_expr        go to state 49
+    multiplicative_expr  go to state 50
+
+
+state 72
+
+   48 relational_expr: relational_expr LESS . additive_expr
+
+    ID       shift, and go to state 58
+    NUMBER   shift, and go to state 31
+    LPARENT  shift, and go to state 32
+
+    primary_expr         go to state 42
+    additive_expr        go to state 100
+    multiplicative_expr  go to state 50
+
+
+state 73
+
+   49 relational_expr: relational_expr GREAT . additive_expr
+
+    ID       shift, and go to state 58
+    NUMBER   shift, and go to state 31
+    LPARENT  shift, and go to state 32
+
+    primary_expr         go to state 42
+    additive_expr        go to state 101
+    multiplicative_expr  go to state 50
+
+
+state 74
+
+   50 relational_expr: relational_expr LESSEQUAL . additive_expr
+
+    ID       shift, and go to state 58
+    NUMBER   shift, and go to state 31
+    LPARENT  shift, and go to state 32
+
+    primary_expr         go to state 42
+    additive_expr        go to state 102
+    multiplicative_expr  go to state 50
+
+
+state 75
+
+   51 relational_expr: relational_expr GREATEQUAL . additive_expr
+
+    ID       shift, and go to state 58
+    NUMBER   shift, and go to state 31
+    LPARENT  shift, and go to state 32
+
+    primary_expr         go to state 42
+    additive_expr        go to state 103
+    multiplicative_expr  go to state 50
+
+
+state 76
+
+   53 additive_expr: additive_expr PLUS . multiplicative_expr
+
+    ID       shift, and go to state 58
+    NUMBER   shift, and go to state 31
+    LPARENT  shift, and go to state 32
+
+    primary_expr         go to state 42
+    multiplicative_expr  go to state 104
+
+
+state 77
+
+   54 additive_expr: additive_expr MINUS . multiplicative_expr
+
+    ID       shift, and go to state 58
+    NUMBER   shift, and go to state 31
+    LPARENT  shift, and go to state 32
+
+    primary_expr         go to state 42
+    multiplicative_expr  go to state 105
+
+
+state 78
+
+   56 multiplicative_expr: multiplicative_expr TIMES . primary_expr
+
+    ID       shift, and go to state 58
+    NUMBER   shift, and go to state 31
+    LPARENT  shift, and go to state 32
+
+    primary_expr  go to state 106
+
+
+state 79
+
+   57 multiplicative_expr: multiplicative_expr DIVIDE . primary_expr
+
+    ID       shift, and go to state 58
+    NUMBER   shift, and go to state 31
+    LPARENT  shift, and go to state 32
+
+    primary_expr  go to state 107
+
+
+state 80
+
+   58 multiplicative_expr: multiplicative_expr PERCENT . primary_expr
+
+    ID       shift, and go to state 58
+    NUMBER   shift, and go to state 31
+    LPARENT  shift, and go to state 32
+
+    primary_expr  go to state 108
+
+
+state 81
+
+    7 compound_stmt: LCURLY statement_list RCURLY .
+
+    $default  reduce using rule 7 (compound_stmt)
+
+
+state 82
+
+   59 statement_list: statement statement_list .
+
+    $default  reduce using rule 59 (statement_list)
+
+
+state 83
+
+   37 call_arg_list: primary_expr .
+
+    $default  reduce using rule 37 (call_arg_list)
+
+
+state 84
+
+   34 call: ID LPARENT call_arguments . RPARENT
+
+    RPARENT  shift, and go to state 109
+
+
+state 85
+
+   35 call_arguments: call_arg_list .
+   38 call_arg_list: call_arg_list . COMA primary_expr
+
+    COMA  shift, and go to state 110
+
+    $default  reduce using rule 35 (call_arguments)
+
+
+state 86
+
+   28 assignment: ID EQUAL expression . SEMICOLON
+
+    SEMICOLON  shift, and go to state 111
+
+
+state 87
+
+   30 primary_expr: ID LSQUBRACKT NUMBER . RSQUBRACKT
+   31             | ID LSQUBRACKT NUMBER . RSQUBRACKT LSQUBRACKT NUMBER RSQUBRACKT
+
+    RSQUBRACKT  shift, and go to state 112
+
+
+state 88
+
+   33 primary_expr: LPARENT expression RPARENT .
+
+    $default  reduce using rule 33 (primary_expr)
+
+
+state 89
+
+   66 conditional_statement: IF LPARENT expression . RPARENT LCURLY statement_list RCURLY
+   67                      | IF LPARENT expression . RPARENT LCURLY statement_list RCURLY ELSE LCURLY statement_list RCURLY
+
+    RPARENT  shift, and go to state 113
+
+
+state 90
+
+   68 conditional_statement: WHILE LPARENT expression . RPARENT LCURLY statement_list RCURLY
+
+    RPARENT  shift, and go to state 114
+
+
+state 91
+
+   69 conditional_statement: DO LCURLY statement_list . RCURLY WHILE LPARENT expression RPARENT SEMICOLON
+
+    RCURLY  shift, and go to state 115
+
+
+state 92
+
+   70 conditional_statement: FOR LPARENT ID . SEMICOLON expression SEMICOLON expression RPARENT LCURLY statement_list RCURLY
+
+    SEMICOLON  shift, and go to state 116
+
+
+state 93
+
+   65 return_stmt: RETURN LPARENT primary_expr . RPARENT SEMICOLON
+
+    RPARENT  shift, and go to state 117
+
+
+state 94
+
+   26 assignment: var_type ID EQUAL . primary_expr SEMICOLON
+
+    ID       shift, and go to state 58
+    NUMBER   shift, and go to state 31
+    LPARENT  shift, and go to state 32
+
+    primary_expr  go to state 118
+
+
+state 95
+
+   22 array: var_type ID LSQUBRACKT . NUMBER RSQUBRACKT SEMICOLON
+   23      | var_type ID LSQUBRACKT . NUMBER RSQUBRACKT LSQUBRACKT NUMBER RSQUBRACKT SEMICOLON
+
+    NUMBER  shift, and go to state 119
+
+
+state 96
+
+   41 logical_or_expr: logical_or_expr OROR logical_and_expr .
+   43 logical_and_expr: logical_and_expr . ANDAND equality_expr
+
+    ANDAND  shift, and go to state 69
+
+    $default  reduce using rule 41 (logical_or_expr)
+
+
+state 97
+
+   43 logical_and_expr: logical_and_expr ANDAND equality_expr .
+   45 equality_expr: equality_expr . EQUALEQUAL relational_expr
+   46              | equality_expr . NOTEQUAL relational_expr
+
+    EQUALEQUAL  shift, and go to state 70
+    NOTEQUAL    shift, and go to state 71
+
+    $default  reduce using rule 43 (logical_and_expr)
+
+
+state 98
+
+   45 equality_expr: equality_expr EQUALEQUAL relational_expr .
+   48 relational_expr: relational_expr . LESS additive_expr
+   49                | relational_expr . GREAT additive_expr
+   50                | relational_expr . LESSEQUAL additive_expr
+   51                | relational_expr . GREATEQUAL additive_expr
+
+    LESS        shift, and go to state 72
+    GREAT       shift, and go to state 73
+    LESSEQUAL   shift, and go to state 74
+    GREATEQUAL  shift, and go to state 75
+
+    $default  reduce using rule 45 (equality_expr)
+
+
+state 99
+
+   46 equality_expr: equality_expr NOTEQUAL relational_expr .
+   48 relational_expr: relational_expr . LESS additive_expr
+   49                | relational_expr . GREAT additive_expr
+   50                | relational_expr . LESSEQUAL additive_expr
+   51                | relational_expr . GREATEQUAL additive_expr
+
+    LESS        shift, and go to state 72
+    GREAT       shift, and go to state 73
+    LESSEQUAL   shift, and go to state 74
+    GREATEQUAL  shift, and go to state 75
+
+    $default  reduce using rule 46 (equality_expr)
+
+
+state 100
+
+   48 relational_expr: relational_expr LESS additive_expr .
+   53 additive_expr: additive_expr . PLUS multiplicative_expr
+   54              | additive_expr . MINUS multiplicative_expr
+
+    PLUS   shift, and go to state 76
+    MINUS  shift, and go to state 77
+
+    $default  reduce using rule 48 (relational_expr)
+
+
+state 101
+
+   49 relational_expr: relational_expr GREAT additive_expr .
+   53 additive_expr: additive_expr . PLUS multiplicative_expr
+   54              | additive_expr . MINUS multiplicative_expr
+
+    PLUS   shift, and go to state 76
+    MINUS  shift, and go to state 77
+
+    $default  reduce using rule 49 (relational_expr)
+
+
+state 102
+
+   50 relational_expr: relational_expr LESSEQUAL additive_expr .
+   53 additive_expr: additive_expr . PLUS multiplicative_expr
+   54              | additive_expr . MINUS multiplicative_expr
+
+    PLUS   shift, and go to state 76
+    MINUS  shift, and go to state 77
+
+    $default  reduce using rule 50 (relational_expr)
+
+
+state 103
+
+   51 relational_expr: relational_expr GREATEQUAL additive_expr .
+   53 additive_expr: additive_expr . PLUS multiplicative_expr
+   54              | additive_expr . MINUS multiplicative_expr
+
+    PLUS   shift, and go to state 76
+    MINUS  shift, and go to state 77
+
+    $default  reduce using rule 51 (relational_expr)
+
+
+state 104
+
+   53 additive_expr: additive_expr PLUS multiplicative_expr .
+   56 multiplicative_expr: multiplicative_expr . TIMES primary_expr
+   57                    | multiplicative_expr . DIVIDE primary_expr
+   58                    | multiplicative_expr . PERCENT primary_expr
+
+    TIMES    shift, and go to state 78
+    DIVIDE   shift, and go to state 79
+    PERCENT  shift, and go to state 80
+
+    $default  reduce using rule 53 (additive_expr)
+
+
+state 105
+
+   54 additive_expr: additive_expr MINUS multiplicative_expr .
+   56 multiplicative_expr: multiplicative_expr . TIMES primary_expr
+   57                    | multiplicative_expr . DIVIDE primary_expr
+   58                    | multiplicative_expr . PERCENT primary_expr
+
+    TIMES    shift, and go to state 78
+    DIVIDE   shift, and go to state 79
+    PERCENT  shift, and go to state 80
+
+    $default  reduce using rule 54 (additive_expr)
+
+
+state 106
+
+   56 multiplicative_expr: multiplicative_expr TIMES primary_expr .
+
+    $default  reduce using rule 56 (multiplicative_expr)
+
+
+state 107
+
+   57 multiplicative_expr: multiplicative_expr DIVIDE primary_expr .
+
+    $default  reduce using rule 57 (multiplicative_expr)
+
+
+state 108
+
+   58 multiplicative_expr: multiplicative_expr PERCENT primary_expr .
+
+    $default  reduce using rule 58 (multiplicative_expr)
+
+
+state 109
+
+   34 call: ID LPARENT call_arguments RPARENT .
+
+    $default  reduce using rule 34 (call)
+
+
+state 110
+
+   38 call_arg_list: call_arg_list COMA . primary_expr
+
+    ID       shift, and go to state 58
+    NUMBER   shift, and go to state 31
+    LPARENT  shift, and go to state 32
+
+    primary_expr  go to state 120
+
+
+state 111
+
+   28 assignment: ID EQUAL expression SEMICOLON .
+
+    $default  reduce using rule 28 (assignment)
+
+
+state 112
+
+   30 primary_expr: ID LSQUBRACKT NUMBER RSQUBRACKT .
+   31             | ID LSQUBRACKT NUMBER RSQUBRACKT . LSQUBRACKT NUMBER RSQUBRACKT
+
+    LSQUBRACKT  shift, and go to state 121
+
+    $default  reduce using rule 30 (primary_expr)
+
+
+state 113
+
+   66 conditional_statement: IF LPARENT expression RPARENT . LCURLY statement_list RCURLY
+   67                      | IF LPARENT expression RPARENT . LCURLY statement_list RCURLY ELSE LCURLY statement_list RCURLY
+
+    LCURLY  shift, and go to state 122
+
+
+state 114
+
+   68 conditional_statement: WHILE LPARENT expression RPARENT . LCURLY statement_list RCURLY
+
+    LCURLY  shift, and go to state 123
+
+
+state 115
+
+   69 conditional_statement: DO LCURLY statement_list RCURLY . WHILE LPARENT expression RPARENT SEMICOLON
+
+    WHILE  shift, and go to state 124
+
+
+state 116
+
+   70 conditional_statement: FOR LPARENT ID SEMICOLON . expression SEMICOLON expression RPARENT LCURLY statement_list RCURLY
+
+    ID       shift, and go to state 58
+    NUMBER   shift, and go to state 31
+    LPARENT  shift, and go to state 32
+
+    primary_expr         go to state 42
+    expression           go to state 125
+    logical_or_expr      go to state 45
+    logical_and_expr     go to state 46
+    equality_expr        go to state 47
+    relational_expr      go to state 48
+    additive_expr        go to state 49
+    multiplicative_expr  go to state 50
+
+
+state 117
+
+   65 return_stmt: RETURN LPARENT primary_expr RPARENT . SEMICOLON
+
+    SEMICOLON  shift, and go to state 126
+
+
+state 118
+
+   26 assignment: var_type ID EQUAL primary_expr . SEMICOLON
+
+    SEMICOLON  shift, and go to state 127
+
+
+state 119
+
+   22 array: var_type ID LSQUBRACKT NUMBER . RSQUBRACKT SEMICOLON
+   23      | var_type ID LSQUBRACKT NUMBER . RSQUBRACKT LSQUBRACKT NUMBER RSQUBRACKT SEMICOLON
+
+    RSQUBRACKT  shift, and go to state 128
+
+
+state 120
+
+   38 call_arg_list: call_arg_list COMA primary_expr .
+
+    $default  reduce using rule 38 (call_arg_list)
+
+
+state 121
+
+   31 primary_expr: ID LSQUBRACKT NUMBER RSQUBRACKT LSQUBRACKT . NUMBER RSQUBRACKT
+
+    NUMBER  shift, and go to state 129
+
+
+state 122
+
+   66 conditional_statement: IF LPARENT expression RPARENT LCURLY . statement_list RCURLY
+   67                      | IF LPARENT expression RPARENT LCURLY . statement_list RCURLY ELSE LCURLY statement_list RCURLY
+
+    ID        shift, and go to state 30
+    NUMBER    shift, and go to state 31
+    LPARENT   shift, and go to state 32
+    INT       shift, and go to state 5
+    FLOAT     shift, and go to state 6
+    LONG      shift, and go to state 7
+    VOID      shift, and go to state 8
+    CHAR      shift, and go to state 9
+    CHARSTAR  shift, and go to state 10
+    IF        shift, and go to state 33
+    WHILE     shift, and go to state 34
+    DO        shift, and go to state 35
+    FOR       shift, and go to state 36
+    RETURN    shift, and go to state 37
+
+    $default  reduce using rule 61 (statement_list)
+
+    global_var             go to state 38
+    var_type               go to state 39
+    array                  go to state 40
+    assignment             go to state 41
+    primary_expr           go to state 42
+    call                   go to state 43
+    expression             go to state 44
+    logical_or_expr        go to state 45
+    logical_and_expr       go to state 46
+    equality_expr          go to state 47
+    relational_expr        go to state 48
+    additive_expr          go to state 49
+    multiplicative_expr    go to state 50
+    statement_list         go to state 130
+    statement              go to state 52
+    return_stmt            go to state 53
+    conditional_statement  go to state 54
+
+
+state 123
+
+   68 conditional_statement: WHILE LPARENT expression RPARENT LCURLY . statement_list RCURLY
+
+    ID        shift, and go to state 30
+    NUMBER    shift, and go to state 31
+    LPARENT   shift, and go to state 32
+    INT       shift, and go to state 5
+    FLOAT     shift, and go to state 6
+    LONG      shift, and go to state 7
+    VOID      shift, and go to state 8
+    CHAR      shift, and go to state 9
+    CHARSTAR  shift, and go to state 10
+    IF        shift, and go to state 33
+    WHILE     shift, and go to state 34
+    DO        shift, and go to state 35
+    FOR       shift, and go to state 36
+    RETURN    shift, and go to state 37
+
+    $default  reduce using rule 61 (statement_list)
+
+    global_var             go to state 38
+    var_type               go to state 39
+    array                  go to state 40
+    assignment             go to state 41
+    primary_expr           go to state 42
+    call                   go to state 43
+    expression             go to state 44
+    logical_or_expr        go to state 45
+    logical_and_expr       go to state 46
+    equality_expr          go to state 47
+    relational_expr        go to state 48
+    additive_expr          go to state 49
+    multiplicative_expr    go to state 50
+    statement_list         go to state 131
+    statement              go to state 52
+    return_stmt            go to state 53
+    conditional_statement  go to state 54
+
+
+state 124
+
+   69 conditional_statement: DO LCURLY statement_list RCURLY WHILE . LPARENT expression RPARENT SEMICOLON
+
+    LPARENT  shift, and go to state 132
+
+
+state 125
+
+   70 conditional_statement: FOR LPARENT ID SEMICOLON expression . SEMICOLON expression RPARENT LCURLY statement_list RCURLY
+
+    SEMICOLON  shift, and go to state 133
+
+
+state 126
+
+   65 return_stmt: RETURN LPARENT primary_expr RPARENT SEMICOLON .
+
+    $default  reduce using rule 65 (return_stmt)
+
+
+state 127
+
+   26 assignment: var_type ID EQUAL primary_expr SEMICOLON .
+
+    $default  reduce using rule 26 (assignment)
+
+
+state 128
+
+   22 array: var_type ID LSQUBRACKT NUMBER RSQUBRACKT . SEMICOLON
+   23      | var_type ID LSQUBRACKT NUMBER RSQUBRACKT . LSQUBRACKT NUMBER RSQUBRACKT SEMICOLON
+
+    SEMICOLON   shift, and go to state 134
+    LSQUBRACKT  shift, and go to state 135
+
+
+state 129
+
+   31 primary_expr: ID LSQUBRACKT NUMBER RSQUBRACKT LSQUBRACKT NUMBER . RSQUBRACKT
+
+    RSQUBRACKT  shift, and go to state 136
+
+
+state 130
+
+   66 conditional_statement: IF LPARENT expression RPARENT LCURLY statement_list . RCURLY
+   67                      | IF LPARENT expression RPARENT LCURLY statement_list . RCURLY ELSE LCURLY statement_list RCURLY
+
+    RCURLY  shift, and go to state 137
+
+
+state 131
+
+   68 conditional_statement: WHILE LPARENT expression RPARENT LCURLY statement_list . RCURLY
+
+    RCURLY  shift, and go to state 138
+
+
+state 132
+
+   69 conditional_statement: DO LCURLY statement_list RCURLY WHILE LPARENT . expression RPARENT SEMICOLON
+
+    ID       shift, and go to state 58
+    NUMBER   shift, and go to state 31
+    LPARENT  shift, and go to state 32
+
+    primary_expr         go to state 42
+    expression           go to state 139
+    logical_or_expr      go to state 45
+    logical_and_expr     go to state 46
+    equality_expr        go to state 47
+    relational_expr      go to state 48
+    additive_expr        go to state 49
+    multiplicative_expr  go to state 50
+
+
+state 133
+
+   70 conditional_statement: FOR LPARENT ID SEMICOLON expression SEMICOLON . expression RPARENT LCURLY statement_list RCURLY
+
+    ID       shift, and go to state 58
+    NUMBER   shift, and go to state 31
+    LPARENT  shift, and go to state 32
+
+    primary_expr         go to state 42
+    expression           go to state 140
+    logical_or_expr      go to state 45
+    logical_and_expr     go to state 46
+    equality_expr        go to state 47
+    relational_expr      go to state 48
+    additive_expr        go to state 49
+    multiplicative_expr  go to state 50
+
+
+state 134
+
+   22 array: var_type ID LSQUBRACKT NUMBER RSQUBRACKT SEMICOLON .
+
+    $default  reduce using rule 22 (array)
+
+
+state 135
+
+   23 array: var_type ID LSQUBRACKT NUMBER RSQUBRACKT LSQUBRACKT . NUMBER RSQUBRACKT SEMICOLON
+
+    NUMBER  shift, and go to state 141
+
+
+state 136
+
+   31 primary_expr: ID LSQUBRACKT NUMBER RSQUBRACKT LSQUBRACKT NUMBER RSQUBRACKT .
+
+    $default  reduce using rule 31 (primary_expr)
+
+
+state 137
+
+   66 conditional_statement: IF LPARENT expression RPARENT LCURLY statement_list RCURLY .
+   67                      | IF LPARENT expression RPARENT LCURLY statement_list RCURLY . ELSE LCURLY statement_list RCURLY
+
+    ELSE  shift, and go to state 142
+
+    $default  reduce using rule 66 (conditional_statement)
+
+
+state 138
+
+   68 conditional_statement: WHILE LPARENT expression RPARENT LCURLY statement_list RCURLY .
+
+    $default  reduce using rule 68 (conditional_statement)
+
+
+state 139
+
+   69 conditional_statement: DO LCURLY statement_list RCURLY WHILE LPARENT expression . RPARENT SEMICOLON
+
+    RPARENT  shift, and go to state 143
+
+
+state 140
+
+   70 conditional_statement: FOR LPARENT ID SEMICOLON expression SEMICOLON expression . RPARENT LCURLY statement_list RCURLY
+
+    RPARENT  shift, and go to state 144
+
+
+state 141
+
+   23 array: var_type ID LSQUBRACKT NUMBER RSQUBRACKT LSQUBRACKT NUMBER . RSQUBRACKT SEMICOLON
+
+    RSQUBRACKT  shift, and go to state 145
+
+
+state 142
+
+   67 conditional_statement: IF LPARENT expression RPARENT LCURLY statement_list RCURLY ELSE . LCURLY statement_list RCURLY
+
+    LCURLY  shift, and go to state 146
+
+
+state 143
+
+   69 conditional_statement: DO LCURLY statement_list RCURLY WHILE LPARENT expression RPARENT . SEMICOLON
+
+    SEMICOLON  shift, and go to state 147
+
+
+state 144
+
+   70 conditional_statement: FOR LPARENT ID SEMICOLON expression SEMICOLON expression RPARENT . LCURLY statement_list RCURLY
+
+    LCURLY  shift, and go to state 148
+
+
+state 145
+
+   23 array: var_type ID LSQUBRACKT NUMBER RSQUBRACKT LSQUBRACKT NUMBER RSQUBRACKT . SEMICOLON
+
+    SEMICOLON  shift, and go to state 149
+
+
+state 146
+
+   67 conditional_statement: IF LPARENT expression RPARENT LCURLY statement_list RCURLY ELSE LCURLY . statement_list RCURLY
+
+    ID        shift, and go to state 30
+    NUMBER    shift, and go to state 31
+    LPARENT   shift, and go to state 32
+    INT       shift, and go to state 5
+    FLOAT     shift, and go to state 6
+    LONG      shift, and go to state 7
+    VOID      shift, and go to state 8
+    CHAR      shift, and go to state 9
+    CHARSTAR  shift, and go to state 10
+    IF        shift, and go to state 33
+    WHILE     shift, and go to state 34
+    DO        shift, and go to state 35
+    FOR       shift, and go to state 36
+    RETURN    shift, and go to state 37
+
+    $default  reduce using rule 61 (statement_list)
+
+    global_var             go to state 38
+    var_type               go to state 39
+    array                  go to state 40
+    assignment             go to state 41
+    primary_expr           go to state 42
+    call                   go to state 43
+    expression             go to state 44
+    logical_or_expr        go to state 45
+    logical_and_expr       go to state 46
+    equality_expr          go to state 47
+    relational_expr        go to state 48
+    additive_expr          go to state 49
+    multiplicative_expr    go to state 50
+    statement_list         go to state 150
+    statement              go to state 52
+    return_stmt            go to state 53
+    conditional_statement  go to state 54
+
+
+state 147
+
+   69 conditional_statement: DO LCURLY statement_list RCURLY WHILE LPARENT expression RPARENT SEMICOLON .
+
+    $default  reduce using rule 69 (conditional_statement)
+
+
+state 148
+
+   70 conditional_statement: FOR LPARENT ID SEMICOLON expression SEMICOLON expression RPARENT LCURLY . statement_list RCURLY
+
+    ID        shift, and go to state 30
+    NUMBER    shift, and go to state 31
+    LPARENT   shift, and go to state 32
+    INT       shift, and go to state 5
+    FLOAT     shift, and go to state 6
+    LONG      shift, and go to state 7
+    VOID      shift, and go to state 8
+    CHAR      shift, and go to state 9
+    CHARSTAR  shift, and go to state 10
+    IF        shift, and go to state 33
+    WHILE     shift, and go to state 34
+    DO        shift, and go to state 35
+    FOR       shift, and go to state 36
+    RETURN    shift, and go to state 37
+
+    $default  reduce using rule 61 (statement_list)
+
+    global_var             go to state 38
+    var_type               go to state 39
+    array                  go to state 40
+    assignment             go to state 41
+    primary_expr           go to state 42
+    call                   go to state 43
+    expression             go to state 44
+    logical_or_expr        go to state 45
+    logical_and_expr       go to state 46
+    equality_expr          go to state 47
+    relational_expr        go to state 48
+    additive_expr          go to state 49
+    multiplicative_expr    go to state 50
+    statement_list         go to state 151
+    statement              go to state 52
+    return_stmt            go to state 53
+    conditional_statement  go to state 54
+
+
+state 149
+
+   23 array: var_type ID LSQUBRACKT NUMBER RSQUBRACKT LSQUBRACKT NUMBER RSQUBRACKT SEMICOLON .
+
+    $default  reduce using rule 23 (array)
+
+
+state 150
+
+   67 conditional_statement: IF LPARENT expression RPARENT LCURLY statement_list RCURLY ELSE LCURLY statement_list . RCURLY
+
+    RCURLY  shift, and go to state 152
+
+
+state 151
+
+   70 conditional_statement: FOR LPARENT ID SEMICOLON expression SEMICOLON expression RPARENT LCURLY statement_list . RCURLY
+
+    RCURLY  shift, and go to state 153
+
+
+state 152
+
+   67 conditional_statement: IF LPARENT expression RPARENT LCURLY statement_list RCURLY ELSE LCURLY statement_list RCURLY .
+
+    $default  reduce using rule 67 (conditional_statement)
+
+
+state 153
+
+   70 conditional_statement: FOR LPARENT ID SEMICOLON expression SEMICOLON expression RPARENT LCURLY statement_list RCURLY .
+
+    $default  reduce using rule 70 (conditional_statement)

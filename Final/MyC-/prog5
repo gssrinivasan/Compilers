@@ -1,0 +1,14 @@
+void surface (int i, int j)
+{
+int area;
+area = i * j;
+return (area);
+}
+
+void main ()
+{
+int i=4;
+int area;
+int j=3;
+surface (i, j);
+}

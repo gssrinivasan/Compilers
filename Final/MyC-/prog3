@@ -1,0 +1,19 @@
+int i,j;
+int main(int a)
+{
+int x = 2;
+do
+{
+i=i+1;
+j=k+1;
+} while (m==0);
+
+int k= 3;
+while(x == 2)
+{
+j = j+1;
+}
+int m [5];
+int a [4][5];
+
+}
