@@ -1,1 +1,3 @@
+# MyC- : A subset of C Language
 
+The code contains the parser generated for the MyC- language with a limited amount of functionalities. The Makefile and the sample code are included.
