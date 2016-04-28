@@ -7,14 +7,15 @@
 #include <list>
 #include "myc.h"
 using namespace std;
+
  extern FILE *yyin;
 // the root of the abstract syntax tree
- statement *root;
+statement *root; 
 // for keeping track of line numbers in the program we are parsing
   int line_num = 1;
 // function prototypes, we need the yylex return prototype so C++ won't complain
 int yylex();
-void yyerror(char * s);
+void yyerror(const char *s);
 %}
 
 %start status
@@ -25,33 +26,25 @@ void yyerror(char * s);
   exp_node *exp_node_ptr;
   statement *st;
 }
+
 %error-verbose
 
-%token <num> NUMBER
-%token <id> ID
-//%token	<id> ID
-%token 	NOTOKEN LPARENT RPARENT LCURLY RCURLY COMA SEMICOLON EQUAL INT FLOAT LONG VOID CHAR CHARSTARSTAR AMPERSAND OROR ANDAND EQUALEQUAL NOTEQUAL LESS GREAT LESSEQUAL GREATEQUAL PLUS MINUS TIMES DIVIDE PERCENT IF ELSE WHILE DO FOR CONTINUE BREAK RETURN LSQUBRACKT RSQUBRACKT MAIN
 
-%type <st> status
-%type <st> function
-%type <st> global_var
-%type <st> call_arg_list
-%type <st> call_arguments
-%type <exp_node_ptr> program
-%type <exp_node_ptr> main
-%type <exp_node_ptr> arguments
-%type <exp_node_ptr> arg_list
-%type <exp_node_ptr> function_or_var_list
-%type <exp_node_ptr> statement
-%type <exp_node_ptr> assignment
-%type <exp_node_ptr> local_var
-%type <exp_node_ptr> array
-%type <exp_node_ptr> compound_statement
-%type <exp_node_ptr> statement_list
-%type <exp_node_ptr> arg
-%type <exp_node_ptr> global_var_list
-%type <exp_node_ptr> call
+%token <id> ID 
+%token <num> NUMBER
+%token 	NOTOKEN LPARENT RPARENT LCURLY RCURLY COMA SEMICOLON EQUAL INT FLOAT LONG VOID CHAR CHARSTAR AMPERSAND OROR ANDAND EQUALEQUAL NOTEQUAL LESS GREAT LESSEQUAL GREATEQUAL PLUS MINUS TIMES DIVIDE PERCENT IF ELSE WHILE DO FOR CONTINUE BREAK RETURN LSQUBRACKT RSQUBRACKT MAIN
+
+%type <st> status//
+%type <st> program
+%type <st> global_var//
+%type <st> statement_list
+%type <st> conditional_statement
+%type <st> statement
+%type <st> assignment
+%type <st> compound_statement
 %type <exp_node_ptr> expression
+%type <exp_node_ptr> array
+%type <exp_node_ptr> global_var_list
 %type <exp_node_ptr> logical_or_expr
 %type <exp_node_ptr> logical_and_expr
 %type <exp_node_ptr> equality_expr
@@ -59,174 +52,117 @@ void yyerror(char * s);
 %type <exp_node_ptr> additive_expr
 %type <exp_node_ptr> multiplicative_expr
 %type <exp_node_ptr> primary_expr
-%type <exp_node_ptr> local_var_list
-%type <exp_node_ptr> jump_statement
 
 %%
-status:
-         program
-        {
-         root = $$;
-        }
-  ;
-        
-program: 
-      function_or_var_list main 
-         {
-         $$=$1;
-         }
-         | main
-         {
-          $$=$1;
-         }
-  ;
-        
-main: 
-   var_type MAIN LPARENT arguments RPARENT LCURLY compound_statement RCURLY
-   {
-     $$ = $7;
-   } 
-  ;        
-function_or_var_list:
-        function_or_var_list function
-        //new
-        | function_or_var_list global_var
-        //new
-        | expression
-         {$$ = $1;}
-        | compound_statement
-        {$$ = $1;}
-	;
-
-function:
-         var_type ID LPARENT arguments RPARENT compound_statement
-         {
-          //new
-          //new
-          $$ = $6;
-         }
-	;
-
-arg_list:
-         arg 
-         {
-          $$ = $1;
-         }
-         | arg_list COMA arg 
-         {
-          //new
-         }
+status: program 
+        {root = $$;} 
   ;
 
-arguments:
-         arg_list
-         {
-          $$ = $1
-         }
-	       | /*empty*/
+program:
+       compound_statement
+       {$$ = $1;} 
+       |
+       //expression {$$ =$1;}
+       assignment {$$ =$1;}          
   ;
-
-arg: 
-    var_type ID SEMICOLON 
-    {
-     //new    
-    }
-  ;
+         
 
 global_var: 
-        var_type global_var_list SEMICOLON 
+        var_type ID global_var_list SEMICOLON 
         {
-         //new
+         $$ = new var_node ($2,$3);
         }
   ;
 
 global_var_list: 
-         ID 
+         global_var_list COMA ID  
          {
-          //new
+          $$ = new var_node ($3,$1);
          }
-         | global_var_list COMA ID 
-         {
-          //new
-         }
+         |
+         {$$ = new skip_stmt();}         
   ;
 
 var_type:
-       array 
-       {
-       //new
-       }
-       | CHAR 
-       | INT 
-       | FLOAT 
-       | CHARSTARSTAR 
-       | LONG  
+       CHAR
+       | INT
+       | FLOAT
+       | CHARSTAR
+       | LONG
        | VOID
-  
   ;
 
 
 array: 
      var_type ID LSQUBRACKT NUMBER RSQUBRACKT SEMICOLON
      {
-      //new
-     }
+      $$ = new arr1d_var($2,$4);
+      }
      | var_type ID LSQUBRACKT NUMBER RSQUBRACKT LSQUBRACKT NUMBER RSQUBRACKT SEMICOLON 
      {
-      //new
+      $$ = new arr2d_var($2,$4,$7);
      }
-;
-
-		
-assignment:
-          ID EQUAL expression 
-           {
-	 	        //new
-		       }
-	         | ID LSQUBRACKT NUMBER RSQUBRACKT EQUAL expression 
-           {
-           //new
-           $$ = $6;
-           }
   ;
 
-call:
-	  ID LPARENT  call_arguments RPARENT 
-    {
-		 //new
-      $$ = $3;
-    }
-      ;
-
-call_arg_list:
-           expression 
+	
+assignment:
+           global_var
            {
-		        $$ = $1 ;
-	         }
-           |call_arg_list COMA expression 
-           {
-	          //new
+           $$ = $1;
            }
-
-	 ;
-
-call_arguments:
-            call_arg_list 
+           |
+           array
+           {
+           $$ = $1;
+           }
+           |
+           var_type ID EQUAL primary_expr SEMICOLON 
+           {
+	 	       $$ = new assignment_stmt ($2,$4);          
+		       }
+	         | 
+           ID EQUAL primary_expr SEMICOLON 
+           {
+           $$ = new assignment_stmt ($1,$3);
+           }
+           | expression
+           {
+            $$ = $1;
+           }
+  ;
+primary_expr:
+             ID 
             {
-             $$ = $1;
+             $$=new id_node($1);
+		        }
+	          | ID LSQUBRACKT NUMBER RSQUBRACKT
+            {
+             $$ = new arr1d_var($1,$3);
             }
-	          | /*empty*/
+            | ID LSQUBRACKT NUMBER RSQUBRACKT LSQUBRACKT NUMBER RSQUBRACKT
             {
-             $$ = new skip_stmt();
+             $$ = new arr2d_var($1,$3,$6);
+            }
+            |NUMBER
+            {
+            $$= new number_node ($1);
+            }
+	          | LPARENT expression RPARENT
+            {
+             $$ = $2;
             } 
-	 ;
-
+                  
+  ;
+  
 expression:
           logical_or_expr
           {
           $$ = $1;
-          }	 
+          }
+         
   ;
+
+
 
 logical_or_expr:
               logical_and_expr
@@ -235,7 +171,7 @@ logical_or_expr:
               }
 	            | logical_or_expr OROR logical_and_expr 
               {
-		           //new
+		           $$ = new logical_oror ($1,$3);
               }
 	 ;
 
@@ -246,7 +182,7 @@ logical_and_expr:
                }
 	             | logical_and_expr ANDAND equality_expr 
                {
-	              //new
+	              $$ = new logical_andand ($1,$3);
                }
 	 ;
 
@@ -257,11 +193,11 @@ equality_expr:
             }
 	          | equality_expr EQUALEQUAL relational_expr 
             {
-             //new
+             $$ = new logical_equalequal($1,$3);
 	 	        }
 	          | equality_expr NOTEQUAL relational_expr 
             {
-             //new
+             $$ = new logical_notequal($1,$3);
             }
   ;
 
@@ -272,19 +208,19 @@ relational_expr:
               }
 	            | relational_expr LESS additive_expr 
               {
-               //new
+               $$ = new logical_less($1,$3);
 	            }
 	            | relational_expr GREAT additive_expr 
               {
-	 	           //new
+	 	           $$ = new logical_great($1,$3);
 	            }
               | relational_expr LESSEQUAL additive_expr 
               {
-	 	           //new
+	 	           $$ = new logical_lessequal($1,$3);
               }
 	            | relational_expr GREATEQUAL additive_expr 
               {
-	 	           //new
+	 	           $$ = new logical_greatequal($1,$3);
 	            }
   ;
 
@@ -295,11 +231,11 @@ additive_expr:
             }
             | additive_expr PLUS multiplicative_expr 
             {
-		          //new
+		          $$ = new plus_expression($1,$3);
             }
 	          | additive_expr MINUS multiplicative_expr 
             {
-	  	       //new
+	  	       $$ = new minus_expression($1,$3);
             }
   ;
 
@@ -310,40 +246,19 @@ multiplicative_expr:
                   }
 	                | multiplicative_expr TIMES primary_expr 
                   {
-                   //new
+                   $$ = new times_expression($1,$3);
 		              }
 	                | multiplicative_expr DIVIDE primary_expr 
                   {
-                   //new
+                   $$ = new divide_expression($1,$3);
   	              }
 	                | multiplicative_expr PERCENT primary_expr 
                   {
-                   //new
+                   $$ = new modulo_expression($1,$3);
   	              }
   ;
 
-primary_expr:
-	          call
-            {
-             $$ = $1;
-            }         
-	          | ID 
-            {
-             $$ = $1;
-		        }
-	          | ID LSQUBRACKT NUMBER RSQUBRACKT
-            {
-              $$ = $1;
-            }
-            |NUMBER
-            {
-              $$ = $1;
-            }
-	          | LPARENT expression RPARENT
-            {
-             $$ = $2;
-            }         
-  ;
+
 
 compound_statement:
 	               LCURLY statement_list RCURLY
@@ -355,7 +270,7 @@ compound_statement:
 statement_list:
             statement_list statement
             {
-             //new
+             $$ = $2;
             }
             | /*empty*/
             {
@@ -363,89 +278,43 @@ statement_list:
             } 
   ;
 
-local_var:
-        var_type local_var_list SEMICOLON 
-        {
-	       //new
-        }
-  ;
-
-local_var_list: 
-              ID 
-              {
-		            $$ = $1;
-              }
-              | local_var_list COMA ID 
-              {
-			         //new
-              }
-  ;
-
 statement:
          assignment SEMICOLON
          {
           $$ = $1;
          }
-	       | call SEMICOLON 
-         {
-          $$ = $1;
-	 	     }
-	       | local_var
-         {
-          $$ = $1;
-         }      
 	       | compound_statement
          {
           $$ = $1;
-         }      
-	       | IF LPARENT expression RPARENT LCURLY statement RCURLY
+         } 
+         | conditional_statement
          {
-          //new
-          $$ = $6
+          $$ = $1;
+         }
+         ;
+         
+conditional_statement:              
+	        IF LPARENT expression RPARENT LCURLY statement RCURLY
+         {
+          $$ = new if_then_stmt($3,$6);
          }
          | IF LPARENT expression RPARENT LCURLY statement RCURLY ELSE LCURLY statement RCURLY
          {
-          //new
-          $$ = $6 || $$ = $10; 
+           $$ = new if_then_else_stmt($3,$6,$10);
          }
 	       | WHILE LPARENT expression RPARENT LCURLY statement RCURLY
          {
-		      //new
-          $$ = $6;      
+		      $$ = new while_stmt($3,$6);      
          }
-         | DO statement WHILE LPARENT expression RPARENT SEMICOLON 
+         | DO LCURLY statement RCURLY WHILE LPARENT expression RPARENT SEMICOLON 
          {
-          $$ = $2 ;
-          //new
+          $$ = new do_while_stmt($3,$7); 
 	 	     }
 	       | FOR LPARENT assignment SEMICOLON expression SEMICOLON assignment RPARENT LCURLY statement RCURLY
          {
-	 	      //new
-          //new
-          //new
-          $$ = $10;           
-	       }
-	       | jump_statement
-         {
-          $$ = $1;
-         }      
+	 	      $$ = new for_stmt($3,$5,$7,$10);            
+	       } 
 	 ;
-
-
-jump_statement:
-       CONTINUE SEMICOLON 
-       {
-        //new
-		   }
-	     | BREAK SEMICOLON 
-       {
-        //new
-	     }
-	     | RETURN expression SEMICOLON 
-       {
-        //new
-		   }
-  ;
 
 %%
 
@@ -466,10 +335,10 @@ int main(int argc, char **argv)
   cout << "---------- exeuction of input program------------" << endl << endl;
   
 
-  root->evaluate();
+  //root->evaluate();
 }
 
-void yyerror(const char * s)
+void yyerror( const char *s)
 {
-	fprintf(stderr,"%s:%d: %s\n",line_num, s);
+  fprintf(stderr, "line %d: %s\n", line_num, s);
 }
